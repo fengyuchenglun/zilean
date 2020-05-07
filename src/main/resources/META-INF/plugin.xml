@@ -1,16 +1,26 @@
 <idea-plugin>
-    <id>com.kim.duanledexianxianxian.zilean.zilean</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>com.kim.zilean</id>
+    <name>Zilean</name>
+    <vendor email="fengyuchenglun@foxmail.com" url="https://github.com/fengyuchenglun">KIM</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    <p>MyBatis代码生成工具。</p>
+    <p>当前支持数据库：</p>
+    <ul>
+        <li>MySQL</li>
+    </ul>
+    <p>当前支持及扩展：</p>
+    <ul>
+        <li>MyBatis</li>
+        <li>MyBatis-Plus</li>
+    </ul>
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
+    <!-- 插件所依赖的其他插件的id -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.database</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -18,5 +28,10 @@
 
     <actions>
         <!-- Add your actions here -->
+        <action id="zilean.ZileanGenerationAction" class="com.kim.zilean.action.ZileanGenerationAction"
+                text="Generate Code"
+                description="Generate myBatis plus common code">
+            <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
+        </action>
     </actions>
 </idea-plugin>
