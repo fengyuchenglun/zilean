@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.intellij' version '0.4.19'
 }
 
-group 'com.kim.duanledexianxianxian.zilean'
+group 'com.kim.zilean'
 version '1.0.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
