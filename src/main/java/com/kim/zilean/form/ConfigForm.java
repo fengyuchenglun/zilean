@@ -1,7 +1,5 @@
 package com.kim.zilean.form;
 
-import cn.cnscoo.batiso.enums.ColumnDataType;
-import cn.cnscoo.batiso.model.GenerateData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.database.model.DasColumn;
@@ -38,15 +36,34 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.kim.zilean.constant.Constants.DEFAULT_LOGIC_DELETE_FIELD;
+
+/**
+ * The type Config form.
+ *
+ * @author duanledexianxianxian
+ */
 public class ConfigForm extends JFrame {
     private JPanel basePane;
-    private JBList<String> tablesList;
+    /**
+     * 表列表
+     */
+    private JBList<String> tableList;
+    /**
+     * 全选/反选按钮
+     */
     private JButton selectBtn;
+    /**
+     * 生成按钮
+     */
     private JButton okBtn;
+    /**
+     * 取消按钮
+     */
     private JButton cancelBtn;
     private TextFieldWithBrowseButton basePathField;
     private JTextField commonColumnsField;
-    private JTextField logicColumnField;
+    private JTextField logicDeleteField;
     private JCheckBox entityCheckbox;
     private PackageChooseTextField entityPkgField;
     private JTextField entitySuffixField;
@@ -57,7 +74,7 @@ public class ConfigForm extends JFrame {
     private PackageChooseTextField servicePkgField;
     private JTextField serviceSuffixField;
     private JCheckBox mapperCheckbox;
-    private TextFieldWithBrowseButton mapperPathField;
+    private TextFieldWithBrowseButton xmlPathField;
     private ClassChooseTextField entitySuperClassField;
     private JTextField mapperSuffixField;
     private JCheckBox serviceImplCheckbox;
@@ -74,8 +91,18 @@ public class ConfigForm extends JFrame {
     private final String dataCacheFile;
     private final AnActionEvent action;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    /**
+     * 表名与表对象map
+     */
     private Map<String, DbTable> tables;
 
+    /**
+     * Instantiates a new Config form.
+     *
+     * @param name   the name
+     * @param action the action
+     * @throws HeadlessException the headless exception
+     */
     public ConfigForm(String name, AnActionEvent action) throws HeadlessException {
         this.action = action;
         this.project = action.getProject();
@@ -89,11 +116,11 @@ public class ConfigForm extends JFrame {
         this.setVisible(true);
         this.dataCacheFile = this.project == null ? null : this.project.getBasePath() + "/.idea/batiso/dataCache.json";
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.tablesList.setBorder(JBUI.Borders.empty(5));
+        this.tableList.setBorder(JBUI.Borders.empty(5));
 
         // 初始化数据
         this.initData();
-        // 绑定潜艇器
+        // 绑定监听器
         this.bindListeners();
     }
 
@@ -105,26 +132,37 @@ public class ConfigForm extends JFrame {
 //        bindCheckboxChange(serviceCheckbox, servicePkgField, serviceSuffixField);
 //        bindCheckboxChange(serviceImplCheckbox, serviceImplPkgField, serviceImplSuffixField);
         this.selectBtn.addActionListener(e -> {
-            if (this.tablesList.getSelectedIndices().length < this.tables.size()) {
-                this.tablesList.setSelectionInterval(0, this.tables.size() - 1);
+            if (this.tableList.getSelectedIndices().length < this.tables.size()) {
+                this.tableList.setSelectionInterval(0, this.tables.size() - 1);
             } else {
-                this.tablesList.clearSelection();
+                this.tableList.clearSelection();
             }
         });
+
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
+
         this.basePathField.addBrowseFolderListener("选择目录", "选择文件生成的目标文件夹", project, folderChooser);
-        this.mapperPathField.addBrowseFolderListener("选择目录", "选择Mapper文件生成目标文件夹", project, folderChooser);
+
+        this.xmlPathField.addBrowseFolderListener("选择目录", "选择Mapper XML文件生成目标文件夹", project, folderChooser);
+
         this.entityPkgField.setActionListener("选择Entity包", project, this);
+
         this.entitySuperClassField.setActionListener("选择Entity父类", project, this);
+
         this.daoPkgField.setActionListener("选择Dao包", project, this);
+
         this.servicePkgField.setActionListener("选择Service包", project, this, pkg -> {
             if (this.serviceImplPkgField.getText().isEmpty()) {
                 this.serviceImplPkgField.setText(pkg.concat(".impl"));
             }
         });
+
         this.serviceImplPkgField.setActionListener("选择ServiceImpl包", project, this);
+
         this.okBtn.addActionListener(e -> this.generator());
+
         this.cancelBtn.addActionListener(e -> this.dispose());
+
         this.cacheBtn.addActionListener(e -> this.initDataFromCache());
     }
 
@@ -137,6 +175,9 @@ public class ConfigForm extends JFrame {
         }
     }
 
+    /**
+     * 初始化数据
+     */
     private void initData() {
         PsiElement[] elements = action.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
         if (elements == null || elements.length == 0) {
@@ -144,23 +185,27 @@ public class ConfigForm extends JFrame {
             return;
         }
         DbTable table = (DbTable) elements[0];
+        // 选择的表列表
         List<DbTable> selectedTables = Arrays.stream(elements).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).collect(Collectors.toList());
         DbElement parent = table.getDasParent();
+        // tables表示所有的表
         List<DbTable> tables = parent == null ? selectedTables : parent.getDasChildren(ObjectKind.TABLE).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).toList();
         this.tables = tables.parallelStream().collect(Collectors.toMap(DasObject::getName, i -> i));
         Vector<String> tableNames = tables.stream().map(DasObject::getName).collect(Collectors.toCollection(Vector::new));
-        this.tablesList.setListData(tableNames);
-        this.tablesList.setSelectedIndices(selectedTables.stream().mapToInt(i -> tableNames.indexOf(i.getName())).toArray());
+       // 设置表列表
+        this.tableList.setListData(tableNames);
+        // 选择的表
+        this.tableList.setSelectedIndices(selectedTables.stream().mapToInt(i -> tableNames.indexOf(i.getName())).toArray());
 
         if (project != null) {
             this.basePathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
-            this.mapperPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mappers"));
+            this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mappers"));
             if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
                 this.cacheBtn.setEnabled(true);
             }
         }
         this.commonColumnsField.setText("id,create_time,update_time");
-        this.logicColumnField.setText("deleted");
+        this.logicDeleteField.setText(DEFAULT_LOGIC_DELETE_FIELD);
     }
 
     private void initDataFromCache() {
@@ -172,7 +217,7 @@ public class ConfigForm extends JFrame {
         this.basePathField.setText(data.getBasePath());
         this.commonColumnsField.setText(data.getCommonColumn());
         this.tablePrefixField.setText(data.getTablePrefix());
-        this.logicColumnField.setText(data.getLogicColumn());
+        this.logicDeleteField.setText(data.getLogicColumn());
 
         this.entityCheckbox.setSelected(data.getTypes().getEntity().isGen());
         this.entityPkgField.setText(data.getTypes().getEntity().getPkg());
@@ -268,7 +313,7 @@ public class ConfigForm extends JFrame {
         data.setBasePath(this.basePathField.getText());
         data.setTablePrefix(this.tablePrefixField.getText());
         data.setCommonColumn(this.commonColumnsField.getText());
-        data.setLogicColumn(this.logicColumnField.getText());
+        data.setLogicColumn(this.logicDeleteField.getText());
         data.setEntitySuperClass(this.entitySuperClassField.getText());
         data.setColumnConst(this.columnConstCheckbox.isSelected());
         data.setLombok(this.lombokCheckBox.isSelected());
@@ -283,7 +328,7 @@ public class ConfigForm extends JFrame {
         types.setServiceImpl(new GenerateData.Type(this.serviceImplPkgField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
         data.setTypes(types);
 
-        data.setTables(this.tablesList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
+        data.setTables(this.tableList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
         return data;
     }
 
@@ -315,7 +360,7 @@ public class ConfigForm extends JFrame {
     }
 
     private void generator() {
-        if (this.tablesList.getSelectedIndices().length == 0) {
+        if (this.tableList.getSelectedIndices().length == 0) {
             Messages.showMessageDialog(project, "请至少选择一个表", "提示", Messages.getInformationIcon());
             return;
         }
@@ -371,5 +416,9 @@ public class ConfigForm extends JFrame {
                 Messages.showMessageDialog(String.format("%s >>> 生成文件【%s】失败: %s", table.getName(), distFile, e.getMessage()), "提示", Messages.getErrorIcon());
             }
         }
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 }

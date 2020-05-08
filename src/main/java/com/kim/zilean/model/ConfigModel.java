@@ -1,8 +1,6 @@
 package com.kim.zilean.model;
 
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -32,4 +30,16 @@ public class ConfigModel implements Serializable {
      * controller/api url 前缀
      */
     private String controllerUrlPrefix = "/api/v1/";
+    /**
+     * 开发人员
+     */
+    private String author = "duanledexianxianxian";
+    /**
+     * 是否覆盖已有文件
+     */
+    private boolean fileOverride = false;
+    /**
+     * 是否打开输出目录
+     */
+    private boolean open = false;
 }
