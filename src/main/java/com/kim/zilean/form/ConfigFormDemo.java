@@ -161,6 +161,8 @@ public class ConfigFormDemo extends JFrame {
 
         // 初始化数据
         this.initData();
+        // 绑定监听器
+        this.bindListeners();
     }
 
 
@@ -200,7 +202,8 @@ public class ConfigFormDemo extends JFrame {
     private void bindListeners() {
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
         this.outputDirField.addBrowseFolderListener("选择目录", "选择文件生成的目标文件夹", project, folderChooser);
-        this.outputDirField.addBrowseFolderListener();
-
+        this.outputDirField.addActionListener(e -> {
+            System.out.println("Button Click");
+        });
     }
 }

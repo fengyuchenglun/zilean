@@ -155,9 +155,6 @@ public class ConfigForm extends JFrame {
         this.initData();
         // 绑定监听器
         this.bindListeners();
-        ActionListener listener = event -> System.out.println("button clicked");
-
-        tablePrefixField.addActionListener(listener);
     }
 
     private void bindListeners() {
@@ -176,9 +173,6 @@ public class ConfigForm extends JFrame {
         });
 
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
-
-        this.basePathField.addBrowseFolderListener("选择目录", "选择文件生成的目标文件夹", project, folderChooser);
-
         this.xmlPathField.addBrowseFolderListener("选择目录", "选择Mapper XML文件生成目标文件夹", project, folderChooser);
 
         this.entityPkgField.setActionListener("选择Entity包", project, this);
