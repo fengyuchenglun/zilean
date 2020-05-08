@@ -7,6 +7,7 @@ import com.intellij.database.psi.DbElement;
 import com.intellij.database.psi.DbTable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiElement;
@@ -197,6 +198,9 @@ public class ConfigFormDemo extends JFrame {
     }
 
     private void bindListeners() {
+        FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
+        this.outputDirField.addBrowseFolderListener("选择目录", "选择文件生成的目标文件夹", project, folderChooser);
+        this.outputDirField.addBrowseFolderListener();
 
     }
 }

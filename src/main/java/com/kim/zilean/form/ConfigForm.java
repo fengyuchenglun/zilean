@@ -19,6 +19,8 @@ import com.kim.zilean.form.component.PackageChooseTextField;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
@@ -153,6 +155,9 @@ public class ConfigForm extends JFrame {
         this.initData();
         // 绑定监听器
         this.bindListeners();
+        ActionListener listener = event -> System.out.println("button clicked");
+
+        tablePrefixField.addActionListener(listener);
     }
 
     private void bindListeners() {
