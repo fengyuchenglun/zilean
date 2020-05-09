@@ -10,7 +10,7 @@
     </border>
     <children>
       <grid id="e4ee4" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="5" left="5" bottom="5" right="5"/>
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="West"/>
         <properties>
           <preferredSize width="200" height="600"/>
@@ -41,7 +41,7 @@
         </children>
       </grid>
       <grid id="942a" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="5" left="5" bottom="5" right="5"/>
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="Center"/>
         <properties>
           <preferredSize width="600" height="600"/>
@@ -49,7 +49,7 @@
         <border type="empty" title="配置"/>
         <children>
           <grid id="273d8" layout-manager="GridLayoutManager" row-count="2" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="5" left="5" bottom="5" right="5"/>
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -79,10 +79,10 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="表前缀"/>
+                  <text value="包路径"/>
                 </properties>
               </component>
-              <component id="624a7" class="javax.swing.JTextField" binding="tablePrefixField">
+              <component id="624a7" class="com.kim.zilean.form.component.PackageChooseTextField" binding="parentField">
                 <constraints>
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="100" height="-1"/>
@@ -95,10 +95,10 @@
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="作者"/>
+                  <text value="表前缀"/>
                 </properties>
               </component>
-              <component id="baaa7" class="javax.swing.JTextField" binding="authorField">
+              <component id="baaa7" class="javax.swing.JTextField" binding="tablePrefixField">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="100" height="-1"/>
@@ -111,10 +111,10 @@
                   <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="通用列"/>
+                  <text value="作者"/>
                 </properties>
               </component>
-              <component id="2243f" class="javax.swing.JTextField" binding="textField4" default-binding="true">
+              <component id="2243f" class="javax.swing.JTextField" binding="authorField">
                 <constraints>
                   <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="100" height="-1"/>
@@ -127,10 +127,10 @@
                   <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="逻辑列"/>
+                  <text value="模块名"/>
                 </properties>
               </component>
-              <component id="4b794" class="javax.swing.JTextField" binding="logicDeleteField">
+              <component id="4b794" class="javax.swing.JTextField" binding="moduleNameField">
                 <constraints>
                   <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="100" height="-1"/>
@@ -138,10 +138,26 @@
                 </constraints>
                 <properties/>
               </component>
+              <component id="89288" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="控制器前缀"/>
+                </properties>
+              </component>
+              <component id="1dfe3" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+                <constraints>
+                  <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="150" height="-1"/>
+                  </grid>
+                </constraints>
+                <properties/>
+              </component>
             </children>
           </grid>
           <grid id="a8342" layout-manager="GridLayoutManager" row-count="6" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="5" left="5" bottom="5" right="5"/>
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -350,7 +366,7 @@
             </children>
           </grid>
           <grid id="df360" layout-manager="GridLayoutManager" row-count="6" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="5" left="5" bottom="5" right="5"/>
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -450,7 +466,7 @@
                   <text value=""/>
                 </properties>
               </component>
-              <component id="fce7c" class="com.kim.zilean.form.component.PackageChooseTextField" binding="xmlPackageField">
+              <component id="fce7c" class="com.kim.zilean.form.component.PackageChooseTextField" binding="xmlPathField">
                 <constraints>
                   <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="-1"/>
@@ -561,27 +577,29 @@
             </children>
           </grid>
           <grid id="baf9e" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="5" left="5" bottom="5" right="5"/>
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
             <border type="none" title="其他配置"/>
             <children>
-              <component id="ec3be" class="javax.swing.JCheckBox" binding="entity列常量CheckBox" default-binding="true">
+              <component id="ec3be" class="javax.swing.JCheckBox" binding="lombokCheckBox1" default-binding="true">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Entity列常量"/>
+                  <selected value="true"/>
+                  <text value="Lombok"/>
                 </properties>
               </component>
-              <component id="aa9b0" class="javax.swing.JCheckBox" binding="tinyint1转BooleanCheckBox" default-binding="true">
+              <component id="aa9b0" class="javax.swing.JCheckBox" binding="覆盖原文件CheckBox" default-binding="true">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="tinyint(1)转Boolean"/>
+                  <selected value="false"/>
+                  <text value="覆盖原文件"/>
                 </properties>
               </component>
               <component id="6c9b5" class="javax.swing.JCheckBox" binding="lombokCheckBox" default-binding="true">
@@ -589,7 +607,8 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Lombok"/>
+                  <selected value="false"/>
+                  <text value="Kotlin "/>
                 </properties>
               </component>
               <component id="4cc79" class="javax.swing.JCheckBox" binding="swaggerCheckBox" default-binding="true">
