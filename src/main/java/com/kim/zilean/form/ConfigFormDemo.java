@@ -89,28 +89,12 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox entityCheckbox;
     private PackageChooseTextField entityPackageField;
     private JTextField entitySuffixField;
-    /**
-     * dto
-     */
-    private JCheckBox dtoCheckbox;
     private PackageChooseTextField dtoPackageField;
     private JTextField dtoSuffixField;
-    /**
-     * vo
-     */
-    private JCheckBox voCheckbox;
     private PackageChooseTextField voPackageField;
     private JTextField voSuffixField;
-    /**
-     * query
-     */
-    private JCheckBox queryCheckbox;
     private PackageChooseTextField queryPackageField;
     private JTextField querySuffixField;
-    /**
-     * form
-     */
-    private JCheckBox formCheckbox;
 
     //---------------工程结构---------------
     private PackageChooseTextField formPackageField;
@@ -121,10 +105,6 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox daoCheckbox;
     private PackageChooseTextField daoPackageField;
     private JTextField daoSuffixField;
-    /**
-     * mapper xml
-     */
-    private JCheckBox xmlCheckbox;
     private PackageChooseTextField xmlPathField;
     private JTextField xmlSuffixField;
     /**
@@ -139,10 +119,6 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox serviceImplCheckbox;
     private PackageChooseTextField serviceImplPackageField;
     private JTextField serviceImplSuffixField;
-    /**
-     * controller
-     */
-    private JCheckBox controllerCheckbox;
     private PackageChooseTextField controllerPackageField;
     private JTextField controllerSuffixField;
     private JTextField controllerUrlPrefixField;
@@ -355,11 +331,12 @@ public class ConfigFormDemo extends JFrame {
 
         ConfigModel configModel = null;
         GlobalConfig config = new GlobalConfig()
-                .setActiveRecord(true)
+                .setActiveRecord(false)
                 .setAuthor(configModel.getAuthor())
                 .setOutputDir(configModel.getOutputDir())
                 .setIdType(IdType.AUTO)
-                .setFileOverride(true);
+                .setFileOverride(configModel.isFileOverride());
+
 
         StrategyConfig strategyConfig = new StrategyConfig();
         String tableNames = Lists.transform(KvnPluginContext.instance().getDbTableList(), new Function<DbTable, String>() {
