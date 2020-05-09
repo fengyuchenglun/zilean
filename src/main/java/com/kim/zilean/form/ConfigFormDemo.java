@@ -1,5 +1,12 @@
 package com.kim.zilean.form;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
+import com.baomidou.mybatisplus.generator.config.TemplateConfig;
+import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.google.common.collect.Lists;
 import com.intellij.database.model.DasObject;
 import com.intellij.database.model.ObjectKind;
 import com.intellij.database.psi.DbElement;
@@ -9,12 +16,20 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.components.JBList;
+import com.kim.zilean.KimPlusAutoGenerator;
+import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.component.PackageChooseTextField;
+import com.kim.zilean.model.ConfigModel;
+import com.kim.zilean.util.ZileanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
@@ -37,9 +52,8 @@ public class ConfigFormDemo extends JFrame {
     private JButton selectBtn;
     private JButton okBtn;
     private JButton cancelBtn;
-    private JButton 加载上次配置Button;
-    private JCheckBox lombokCheckBox1;
-    private JCheckBox 覆盖原文件CheckBox;
+    private JButton previousConfigBtn;
+    private JCheckBox lombokCheckBox;
 
 
     //---------基本配置-----------
@@ -131,7 +145,7 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox controllerCheckbox;
     private PackageChooseTextField controllerPackageField;
     private JTextField controllerSuffixField;
-    private JTextField textField1;
+    private JTextField controllerUrlPrefixField;
 
     //------------基本配置-------------
     private JCheckBox entityLombokModelField;
@@ -152,6 +166,8 @@ public class ConfigFormDemo extends JFrame {
     public ConfigFormDemo(String name, AnActionEvent action) throws HeadlessException {
         this.action = action;
         this.project = action.getProject();
+        ZileanContext.getInstance().setConfigForm(this);
+        ZileanContext.getInstance().setProject(this.project);
 
         this.setTitle(name);
         this.setPreferredSize(new Dimension(1000, 800));
@@ -200,17 +216,8 @@ public class ConfigFormDemo extends JFrame {
         }
 //        this.commonColumnsField.setText("id,create_time,update_time");
         this.logicDeleteField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-
-        this.entityPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.dtoPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.voPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.queryPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.formPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-
-        this.daoPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.servicePackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.serviceImplPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
-        this.controllerPackageField.setText(DEFAULT_LOGIC_DELETE_FIELD);
+        this.controllerUrlPrefixField.setText(DEFAULT_CONTROLLER_URL_PREFIX);
+        this.authorField.setText(StringUtils.isBlank(System.getProperty("user.name")) ? System.getProperty("user.name") : DEFAULT_AUTHOR);
 
         this.entitySuffixField.setText(DEFAULT_ENTITY_SUFFIX);
         this.dtoSuffixField.setText(DEFAULT_DTO_SUFFIX);
@@ -224,6 +231,7 @@ public class ConfigFormDemo extends JFrame {
         this.serviceSuffixField.setText(DEFAULT_SERVICE_SUFFIX);
         this.serviceImplSuffixField.setText(DEFAULT_SERVICE_IMPL_SUFFIX);
         this.controllerSuffixField.setText(DEFAULT_CONTROLLER_SUFFIX);
+
 
     }
 
@@ -247,6 +255,30 @@ public class ConfigFormDemo extends JFrame {
             });
         });
 
+
+        // 包路径
+        this.parentField.setActionListener("选择包路径", project, this, x -> {
+            this.updatePackagePath();
+        });
+
+        this.moduleNameField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                ZileanContext.getInstance().getConfigForm().updatePackagePath();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                ZileanContext.getInstance().getConfigForm().updatePackagePath();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                System.out.println("changedUpdate");
+            }
+        });
+
+
         this.entityPackageField.setActionListener("选择Entity包", project, this);
         this.dtoPackageField.setActionListener("选择DTO包", project, this);
         this.voPackageField.setActionListener("选择VO包", project, this);
@@ -259,7 +291,104 @@ public class ConfigFormDemo extends JFrame {
         this.controllerPackageField.setActionListener("选择Controller包", project, this);
 
 
+        // ok按钮
+        this.okBtn.addActionListener(e -> this.generateCode());
+        // 销毁窗口
+        this.cancelBtn.addActionListener(e -> this.dispose());
+        this.previousConfigBtn.addActionListener(e -> this.initDataFromCache());
     }
 
+    private void updatePackagePath() {
+        String parent = this.parentField.getText();
+        String moduleName = this.moduleNameField.getText();
+        String basePackage = parent;
+        if (StringUtils.isNotBlank(moduleName)) {
+            basePackage = ZileanUtils.joinPackage(parent, moduleName + DOT);
+        }
+        this.entityPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.entity"));
+        this.dtoPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.dto"));
+        this.voPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.vo"));
+        this.queryPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.query"));
+        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.form"));
+
+        this.daoPackageField.setText(ZileanUtils.joinPackage(basePackage, "dao"));
+        this.servicePackageField.setText(ZileanUtils.joinPackage(basePackage, "service"));
+        this.serviceImplPackageField.setText(ZileanUtils.joinPackage(basePackage, "service.impl"));
+        this.controllerPackageField.setText(ZileanUtils.joinPackage(basePackage, "controller"));
+    }
+
+
+    private ConfigModel buildConfigModel() {
+        ConfigModel data = new ConfigModel();
+        data.setOutputDir(this.outputDirField.getText());
+        data.setTablePrefix(this.tablePrefixField.getText());
+        data.setCommonColumn(this.commonColumnsField.getText());
+        data.setLogicColumn(this.logicColumnField.getText());
+        data.setEntitySuperClass(this.entitySuperClassField.getText());
+        data.setColumnConst(this.columnConstCheckbox.isSelected());
+        data.setLombok(this.lombokCheckBox.isSelected());
+        data.setTinyint2boolean(this.tinyintCheckbox.isSelected());
+        data.setSwagger(this.swaggerCheckbox.isSelected());
+
+        GenerateData.Types types = new GenerateData.Types();
+        types.setEntity(new GenerateData.Type(this.entityPkgField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
+        types.setDao(new GenerateData.Type(this.daoPkgField.getText(), this.daoSuffixField.getText(), this.daoCheckbox.isSelected()));
+        types.setMapper(new GenerateData.Type(this.mapperPathField.getText(), this.mapperSuffixField.getText(), this.mapperCheckbox.isSelected()));
+        types.setService(new GenerateData.Type(this.servicePkgField.getText(), this.serviceSuffixField.getText(), this.serviceCheckbox.isSelected()));
+        types.setServiceImpl(new GenerateData.Type(this.serviceImplPkgField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
+        data.setTypes(types);
+
+        data.setTables(this.tablesList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
+        return data;
+    }
+
+
+    /**
+     * 生成代码
+     */
+    private void generateCode() {
+        if (this.tableList.getSelectedIndices().length == 0) {
+            Messages.showMessageDialog(project, "请至少选择一个表", "提示", Messages.getInformationIcon());
+            return;
+        }
+
+
+        ConfigModel configModel = null;
+        GlobalConfig config = new GlobalConfig()
+                .setActiveRecord(true)
+                .setAuthor(configModel.getAuthor())
+                .setOutputDir(configModel.getOutputDir())
+                .setIdType(IdType.AUTO)
+                .setFileOverride(true);
+
+        StrategyConfig strategyConfig = new StrategyConfig();
+        String tableNames = Lists.transform(KvnPluginContext.instance().getDbTableList(), new Function<DbTable, String>() {
+            public String apply(DbTable dbTable) {
+                return dbTable.getName();
+            }
+        }).stream().collect(Collectors.joining(","));
+        strategyConfig
+                .setCapitalMode(true)
+                .setEntityLombokModel(true) // lombok支持
+                .setDbColumnUnderline(true)
+                .setNaming(NamingStrategy.underline_to_camel)
+//                .setTablePrefix("ts_")
+                .setInclude(tableNames);//修改替换成你需要的表名，多个表名传数组
+
+        PackageConfig packageConfig = new PackageConfig()
+                .setParent(KvnPluginContext.instance().getPackageName())
+                .setModuleName(null)
+                .setController("controller")
+                .setEntity("entity");
+
+        // 当前使用的代码生成模板
+        TemplateConfig template = new TemplateConfig(PersistentConfig.instance().getCurrTemplateGroupName(), selectTemplateList);
+//        Debugger.debug(template);
+        new KimPlusAutoGenerator().setTemplate(template).setGlobalConfig(config).setStrategy(strategyConfig).setPackageInfo(packageConfig).setDbTables(KvnPluginContext.instance().getDbTableList()).execute();
+    }
+
+    private void initDataFromCache() {
+
+    }
 
 }

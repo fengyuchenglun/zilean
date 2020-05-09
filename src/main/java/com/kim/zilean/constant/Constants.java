@@ -9,9 +9,19 @@ package com.kim.zilean.constant;
  */
 public class Constants {
     /**
+     * The constant DOT.
+     */
+    public static final String DOT = ".";
+
+    /**
      * 默认逻辑删除字段
      */
     public static final String DEFAULT_LOGIC_DELETE_FIELD = "is_deleted";
+    /**
+     * The constant DEFAULT_CONTROLLER_URL_PREFIX.
+     */
+    public static final String DEFAULT_CONTROLLER_URL_PREFIX = "/api/v1";
+    public static final String DEFAULT_AUTHOR = "duanledexianxianxian";
 
     /**
      * entity后缀

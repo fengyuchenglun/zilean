@@ -1,9 +1,13 @@
 package com.kim.zilean.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.kim.zilean.constant.Constants.DOT;
 
 /**
  * 工具类.
@@ -68,5 +72,19 @@ public class ZileanUtils {
     public static String toHumpAndUpperCaseFirstLetter(String s) {
         String str = underLineToHump(s);
         return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    /**
+     * 拼接包名
+     *
+     * @param parent     the parent
+     * @param subPackage the sub package
+     * @return string
+     */
+    public static String joinPackage(String parent, String subPackage) {
+        if (StringUtils.isBlank(parent)) {
+            return subPackage;
+        }
+        return parent + DOT + subPackage;
     }
 }
