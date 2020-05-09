@@ -33,5 +33,25 @@ public class Constants {
      * form后缀
      */
     public static final String DEFAULT_FORM_SUFFIX = "Form";
+    /**
+     * Dao后缀
+     */
+    public static final String DEFAULT_DAO_SUFFIX = "Dao";
+    /**
+     * Service后缀
+     */
+    public static final String DEFAULT_SERVICE_SUFFIX = "Service";
+    /**
+     * ServiceImpl后缀
+     */
+    public static final String DEFAULT_SERVICE_IMPL_SUFFIX = "ServiceImpl";
+    /**
+     * Mapper后缀
+     */
+    public static final String DEFAULT_MAPPER_SUFFIX = "Mapper";
+    /**
+     * Controller后缀
+     */
+    public static final String DEFAULT_CONTROLLER_SUFFIX = "Controller";
 
 }
