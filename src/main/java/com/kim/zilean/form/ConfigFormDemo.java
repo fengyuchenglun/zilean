@@ -2,11 +2,6 @@ package com.kim.zilean.form;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.generator.config.GlobalConfig;
-import com.baomidou.mybatisplus.generator.config.PackageConfig;
-import com.baomidou.mybatisplus.generator.config.StrategyConfig;
-import com.baomidou.mybatisplus.generator.config.TemplateConfig;
-import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
-import com.google.common.collect.Lists;
 import com.intellij.database.model.DasObject;
 import com.intellij.database.model.ObjectKind;
 import com.intellij.database.psi.DbElement;
@@ -20,10 +15,11 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.components.JBList;
-import com.kim.zilean.KimPlusAutoGenerator;
 import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.component.PackageChooseTextField;
-import com.kim.zilean.model.ConfigModel;
+import com.kim.zilean.model.Config;
+import com.kim.zilean.model.PackageConfig;
+import com.kim.zilean.model.PackageConfigs;
 import com.kim.zilean.util.ZileanUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -201,7 +197,6 @@ public class ConfigFormDemo extends JFrame {
         this.querySuffixField.setText(DEFAULT_QUERY_SUFFIX);
         this.formSuffixField.setText(DEFAULT_FORM_SUFFIX);
 
-
         this.daoSuffixField.setText(DEFAULT_DAO_SUFFIX);
         this.xmlSuffixField.setText(DEFAULT_MAPPER_SUFFIX);
         this.serviceSuffixField.setText(DEFAULT_SERVICE_SUFFIX);
@@ -218,14 +213,14 @@ public class ConfigFormDemo extends JFrame {
     private void bindListeners() {
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
         this.outputDirField.addActionListener(e -> {
-            FileChooser.chooseFile(folderChooser, project, null, x -> {
+            FileChooser.chooseFile(folderChooser, project, this, null, x -> {
                 this.outputDirField.setText(x.getPath());
                 this.setAlwaysOnTop(true);
             });
         });
 
         this.xmlPathField.addActionListener(e -> {
-            FileChooser.chooseFile(folderChooser, project, null, x -> {
+            FileChooser.chooseFile(folderChooser, project, this, null, x -> {
                 this.xmlPathField.setText(x.getPath());
                 this.setAlwaysOnTop(true);
             });
@@ -294,28 +289,31 @@ public class ConfigFormDemo extends JFrame {
     }
 
 
-    private ConfigModel buildConfigModel() {
-        ConfigModel data = new ConfigModel();
-        data.setOutputDir(this.outputDirField.getText());
-        data.setTablePrefix(this.tablePrefixField.getText());
-        data.setCommonColumn(this.commonColumnsField.getText());
-        data.setLogicColumn(this.logicColumnField.getText());
-        data.setEntitySuperClass(this.entitySuperClassField.getText());
-        data.setColumnConst(this.columnConstCheckbox.isSelected());
-        data.setLombok(this.lombokCheckBox.isSelected());
-        data.setTinyint2boolean(this.tinyintCheckbox.isSelected());
-        data.setSwagger(this.swaggerCheckbox.isSelected());
+    private Config buildConfig() {
+        Config config = new Config();
+        config.setOutputDir(this.outputDirField.getText());
+        config.setTablePrefix(this.tablePrefixField.getText());
+        config.setParent(this.parentField.getText());
+        config.setLogicDeleteFieldName(this.logicDeleteFieldNameField.getText());
+        config.setModuleName(this.moduleNameField.getText());
+        config.setAuthor(this.authorField.getText());
+        config.setControllerUrlPrefix(this.controllerUrlPrefixField.getText());
 
-        GenerateData.Types types = new GenerateData.Types();
-        types.setEntity(new GenerateData.Type(this.entityPkgField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
-        types.setDao(new GenerateData.Type(this.daoPkgField.getText(), this.daoSuffixField.getText(), this.daoCheckbox.isSelected()));
-        types.setMapper(new GenerateData.Type(this.mapperPathField.getText(), this.mapperSuffixField.getText(), this.mapperCheckbox.isSelected()));
-        types.setService(new GenerateData.Type(this.servicePkgField.getText(), this.serviceSuffixField.getText(), this.serviceCheckbox.isSelected()));
-        types.setServiceImpl(new GenerateData.Type(this.serviceImplPkgField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
-        data.setTypes(types);
-
-        data.setTables(this.tablesList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
-        return data;
+        PackageConfigs packageConfigs = new PackageConfigs();
+        packageConfigs.setEntity(new PackageConfig(this.entityPackageField.getText(), this.entitySuffixField.getText(), true));
+        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.daoSuffixField.getText(), true));
+        packageConfigs.setVo(new PackageConfig(this.voPackageField.getText(), this.voSuffixField.getText(), true));
+        packageConfigs.setForm(new PackageConfig(this.formPackageField.getText(), this.formSuffixField.getText(), true));
+        packageConfigs.setQuery(new PackageConfig(this.queryPackageField.getText(), this.querySuffixField.getText(), true));
+        packageConfigs.setDao(new PackageConfig(this.daoPackageField.getText(), this.daoSuffixField.getText(), true));
+        packageConfigs.setXml(new PackageConfig(this.xmlPathField.getText(), this.xmlSuffixField.getText(), true));
+        packageConfigs.setService(new PackageConfig(this.servicePackageField.getText(), this.serviceSuffixField.getText(), true));
+        packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), true));
+        packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), true));
+        config.setPackageConfigs(packageConfigs);
+        //
+        config.setTables(this.tableList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
+        return config;
     }
 
 
@@ -329,7 +327,7 @@ public class ConfigFormDemo extends JFrame {
         }
 
 
-        ConfigModel configModel = null;
+        Config configModel = null;
         GlobalConfig config = new GlobalConfig()
                 .setActiveRecord(false)
                 .setAuthor(configModel.getAuthor())
@@ -338,30 +336,30 @@ public class ConfigFormDemo extends JFrame {
                 .setFileOverride(configModel.isFileOverride());
 
 
-        StrategyConfig strategyConfig = new StrategyConfig();
-        String tableNames = Lists.transform(KvnPluginContext.instance().getDbTableList(), new Function<DbTable, String>() {
-            public String apply(DbTable dbTable) {
-                return dbTable.getName();
-            }
-        }).stream().collect(Collectors.joining(","));
-        strategyConfig
-                .setCapitalMode(true)
-                .setEntityLombokModel(true) // lombok支持
-                .setDbColumnUnderline(true)
-                .setNaming(NamingStrategy.underline_to_camel)
-//                .setTablePrefix("ts_")
-                .setInclude(tableNames);//修改替换成你需要的表名，多个表名传数组
-
-        PackageConfig packageConfig = new PackageConfig()
-                .setParent(KvnPluginContext.instance().getPackageName())
-                .setModuleName(null)
-                .setController("controller")
-                .setEntity("entity");
-
-        // 当前使用的代码生成模板
-        TemplateConfig template = new TemplateConfig(PersistentConfig.instance().getCurrTemplateGroupName(), selectTemplateList);
-//        Debugger.debug(template);
-        new KimPlusAutoGenerator().setTemplate(template).setGlobalConfig(config).setStrategy(strategyConfig).setPackageInfo(packageConfig).setDbTables(KvnPluginContext.instance().getDbTableList()).execute();
+//        StrategyConfig strategyConfig = new StrategyConfig();
+//        String tableNames = Lists.transform(KvnPluginContext.instance().getDbTableList(), new Function<DbTable, String>() {
+//            public String apply(DbTable dbTable) {
+//                return dbTable.getName();
+//            }
+//        }).stream().collect(Collectors.joining(","));
+//        strategyConfig
+//                .setCapitalMode(true)
+//                .setEntityLombokModel(true) // lombok支持
+//                .setDbColumnUnderline(true)
+//                .setNaming(NamingStrategy.underline_to_camel)
+////                .setTablePrefix("ts_")
+//                .setInclude(tableNames);//修改替换成你需要的表名，多个表名传数组
+//
+//        PackageConfig packageConfig = new PackageConfig()
+//                .setParent(KvnPluginContext.instance().getPackageName())
+//                .setModuleName(null)
+//                .setController("controller")
+//                .setEntity("entity");
+//
+//        // 当前使用的代码生成模板
+//        TemplateConfig template = new TemplateConfig(PersistentConfig.instance().getCurrTemplateGroupName(), selectTemplateList);
+////        Debugger.debug(template);
+//        new KimPlusAutoGenerator().setTemplate(template).setGlobalConfig(config).setStrategy(strategyConfig).setPackageInfo(packageConfig).setDbTables(KvnPluginContext.instance().getDbTableList()).execute();
     }
 
     private void initDataFromCache() {

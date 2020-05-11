@@ -287,8 +287,8 @@ public class ConfigForm extends JFrame {
 //        return clz;
 //    }
 //
-//    private GenerateData.Table buildTableData(GenerateData g, DbTable table) {
-//        GenerateData.Table data = new GenerateData.Table();
+//    private GenerateData.TableInfo buildTableData(GenerateData g, DbTable table) {
+//        GenerateData.TableInfo data = new GenerateData.TableInfo();
 //        data.setName(table.getName());
 //        data.setComment(table.getComment());
 //
@@ -429,7 +429,7 @@ public class ConfigForm extends JFrame {
 //        this.dispose();
 //    }
 //
-//    private void doGenTemp(GenerateData.Table table, GenerateData.Type type, Configuration gt, String tpl, String distFile, GenerateData data) {
+//    private void doGenTemp(GenerateData.TableInfo table, GenerateData.Type type, Configuration gt, String tpl, String distFile, GenerateData data) {
 //        if (type.isGen()) {
 //            try {
 //                Map<String, Object> dataModel = new HashMap<>(4);

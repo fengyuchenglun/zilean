@@ -205,7 +205,7 @@
               <component id="3efb8" class="javax.swing.JTextField" binding="entitySuffixField">
                 <constraints>
                   <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                    <preferred-size width="306" height="30"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -285,7 +285,7 @@
               <component id="d1a2f" class="javax.swing.JTextField" binding="dtoSuffixField">
                 <constraints>
                   <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                    <preferred-size width="306" height="30"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -293,7 +293,7 @@
               <component id="e41e8" class="javax.swing.JTextField" binding="voSuffixField">
                 <constraints>
                   <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                    <preferred-size width="306" height="30"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -301,7 +301,7 @@
               <component id="704f1" class="javax.swing.JTextField" binding="querySuffixField">
                 <constraints>
                   <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                    <preferred-size width="306" height="30"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -309,7 +309,7 @@
               <component id="f5e6" class="javax.swing.JTextField" binding="formSuffixField">
                 <constraints>
                   <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="150" height="-1"/>
+                    <preferred-size width="306" height="30"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -324,7 +324,9 @@
               </component>
               <component id="c00a2" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="306" height="17"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <text value="类后缀"/>

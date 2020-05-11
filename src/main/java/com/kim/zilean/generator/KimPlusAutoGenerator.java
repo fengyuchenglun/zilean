@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.kim.zilean;
+package com.kim.zilean.generator;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -26,7 +26,7 @@ import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.engine.AbstractTemplateEngine;
-import com.baomidou.mybatisplus.generator.engine.VelocityTemplateEngine;
+import com.intellij.database.psi.DbTable;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 /**
  * 生成文件
@@ -53,7 +54,7 @@ public class KimPlusAutoGenerator {
     /**
      * 配置信息
      */
-    protected ConfigBuilder config;
+    protected KimPlusConfigBuilder config;
     /**
      * 注入配置
      */
@@ -85,6 +86,10 @@ public class KimPlusAutoGenerator {
      */
     private AbstractTemplateEngine templateEngine;
 
+
+    private Collection<DbTable> dbTables;
+
+
     /**
      * 生成代码
      */
@@ -92,14 +97,10 @@ public class KimPlusAutoGenerator {
         logger.debug("==========================准备生成文件...==========================");
         // 初始化配置
         if (null == config) {
-            config = new ConfigBuilder(packageInfo, dataSource, strategy, template, globalConfig);
+            config = new KimPlusConfigBuilder(packageInfo,, strategy, template, globalConfig);
             if (null != injectionConfig) {
                 injectionConfig.setConfig(config);
             }
-        }
-        if (null == templateEngine) {
-            // 为了兼容之前逻辑，采用 Velocity 引擎 【 默认 】
-            templateEngine = new VelocityTemplateEngine();
         }
         // 模板引擎初始化执行文件输出
         templateEngine.init(this.pretreatmentConfigBuilder(config)).mkdirs().batchOutput().open();
@@ -196,5 +197,13 @@ public class KimPlusAutoGenerator {
     public KimPlusAutoGenerator setCfg(InjectionConfig injectionConfig) {
         this.injectionConfig = injectionConfig;
         return this;
+    }
+
+    public Collection<DbTable> getDbTables() {
+        return dbTables;
+    }
+
+    public void setDbTables(Collection<DbTable> dbTables) {
+        this.dbTables = dbTables;
     }
 }
