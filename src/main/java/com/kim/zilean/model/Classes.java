@@ -12,11 +12,11 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class Class {
+public class Classes {
     /**
      * 包名
      */
-    private String packagePath;
+    private String pkg;
     /**
      * 类名（首字母大写，如 MobilePhone）
      */

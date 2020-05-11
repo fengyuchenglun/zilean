@@ -26,19 +26,39 @@ public class TableInfo {
     /**
      * 表的实体类信息
      */
-    private Class entity;
+    private Classes entity;
+    /**
+     * vo
+     */
+    private Classes vo;
+    /**
+     * dto
+     */
+    private Classes dto;
+    /**
+     * form
+     */
+    private Classes form;
+    /**
+     * query
+     */
+    private Classes query;
     /**
      * 表的 Dao 类信息
      */
-    private Class dao;
+    private Classes dao;
     /**
      * 表的 Service 接口信息
      */
-    private Class service;
+    private Classes service;
     /**
      * 表的 ServiceImpl 类信息
      */
-    private Class serviceImpl;
+    private Classes serviceImpl;
+    /**
+     * 表的 ServiceImpl 类信息
+     */
+    private Classes controller;
     /**
      * 表的 Mapper 文件路径
      */

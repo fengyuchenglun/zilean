@@ -55,4 +55,17 @@ public class StringUtils {
         }
         return sb.toString();
     }
+
+    /**
+     * 大写第一个字母
+     *
+     * @param src 源字符串
+     * @return 返回第一个大写后的字符串
+     */
+    public static String upperFirst(String src) {
+        if (Character.isLowerCase(src.charAt(0))) {
+            return 1 == src.length() ? src.toUpperCase() : Character.toUpperCase(src.charAt(0)) + src.substring(1);
+        }
+        return src;
+    }
 }

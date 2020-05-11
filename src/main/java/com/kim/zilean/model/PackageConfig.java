@@ -17,9 +17,10 @@ public class PackageConfig {
      * 包路径
      * 如com.kim.zilean
      */
-    private String packagePath;
+    private String pkg;
     /**
-     * 类型后缀名，如 User 加后缀 Service 为 UserService
+     * 类型后缀名
+     * 如 User 加后缀 Service 为 UserService
      */
     private String suffix;
     /**

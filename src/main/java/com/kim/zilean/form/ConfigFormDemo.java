@@ -1,7 +1,5 @@
 package com.kim.zilean.form;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.intellij.database.model.DasObject;
 import com.intellij.database.model.ObjectKind;
 import com.intellij.database.psi.DbElement;
@@ -17,6 +15,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.ui.components.JBList;
 import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.component.PackageChooseTextField;
+import com.kim.zilean.generator.KimPlusGeneratorHelper;
 import com.kim.zilean.model.Config;
 import com.kim.zilean.model.PackageConfig;
 import com.kim.zilean.model.PackageConfigs;
@@ -56,7 +55,7 @@ public class ConfigFormDemo extends JFrame {
     /**
      * 生成代码基础路径
      */
-    private TextFieldWithBrowseButton outputDirField;
+    private TextFieldWithBrowseButton basePathField;
     /**
      * 包路径
      */
@@ -75,10 +74,6 @@ public class ConfigFormDemo extends JFrame {
      */
     private JTextField authorField;
     //---------------domain---------------
-    /**
-     * 逻辑字段
-     */
-    private JTextField logicDeleteField;
     /**
      * entity
      */
@@ -121,7 +116,9 @@ public class ConfigFormDemo extends JFrame {
 
     //------------基本配置-------------
     private JCheckBox entityLombokModelField;
-    private JCheckBox logicDeleteFieldNameField;
+    private JTextField commonColumnField;
+    private JTextField logicColumnField;
+    private JCheckBox 是否打开CheckBox;
 
     /**
      * 表名与表对象map
@@ -180,14 +177,14 @@ public class ConfigFormDemo extends JFrame {
         this.tableList.setSelectedIndices(selectedTables.stream().mapToInt(i -> tableNames.indexOf(i.getName())).toArray());
 
         if (project != null) {
-            this.outputDirField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
+            this.basePathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
             this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mappers"));
 //            if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
 //                this.cacheBtn.setEnabled(true);
 //            }
         }
 //        this.commonColumnsField.setText("id,create_time,update_time");
-        this.logicDeleteField.setText(DEFAULT_LOGIC_DELETE_FIELD);
+        this.logicColumnField.setText(DEFAULT_LOGIC_DELETE_FIELD);
         this.controllerUrlPrefixField.setText(DEFAULT_CONTROLLER_URL_PREFIX);
         this.authorField.setText(StringUtils.isBlank(System.getProperty("user.name")) ? System.getProperty("user.name") : DEFAULT_AUTHOR);
 
@@ -202,8 +199,6 @@ public class ConfigFormDemo extends JFrame {
         this.serviceSuffixField.setText(DEFAULT_SERVICE_SUFFIX);
         this.serviceImplSuffixField.setText(DEFAULT_SERVICE_IMPL_SUFFIX);
         this.controllerSuffixField.setText(DEFAULT_CONTROLLER_SUFFIX);
-
-
     }
 
 
@@ -212,9 +207,9 @@ public class ConfigFormDemo extends JFrame {
      */
     private void bindListeners() {
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
-        this.outputDirField.addActionListener(e -> {
+        this.basePathField.addActionListener(e -> {
             FileChooser.chooseFile(folderChooser, project, this, null, x -> {
-                this.outputDirField.setText(x.getPath());
+                this.basePathField.setText(x.getPath());
                 this.setAlwaysOnTop(true);
             });
         });
@@ -269,6 +264,9 @@ public class ConfigFormDemo extends JFrame {
         this.previousConfigBtn.addActionListener(e -> this.initDataFromCache());
     }
 
+    /**
+     * 更新包路径
+     */
     private void updatePackagePath() {
         String parent = this.parentField.getText();
         String moduleName = this.moduleNameField.getText();
@@ -289,12 +287,18 @@ public class ConfigFormDemo extends JFrame {
     }
 
 
+    /**
+     * 从页面配置构建新建配置参数
+     *
+     * @return
+     */
     private Config buildConfig() {
         Config config = new Config();
-        config.setOutputDir(this.outputDirField.getText());
+        config.setBasePath(this.basePathField.getText());
         config.setTablePrefix(this.tablePrefixField.getText());
         config.setParent(this.parentField.getText());
-        config.setLogicDeleteFieldName(this.logicDeleteFieldNameField.getText());
+        config.setLogicColumn(this.logicColumnField.getText());
+        config.setCommonColumn(this.commonColumnField.getText());
         config.setModuleName(this.moduleNameField.getText());
         config.setAuthor(this.authorField.getText());
         config.setControllerUrlPrefix(this.controllerUrlPrefixField.getText());
@@ -311,8 +315,7 @@ public class ConfigFormDemo extends JFrame {
         packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), true));
         packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), true));
         config.setPackageConfigs(packageConfigs);
-        //
-        config.setTables(this.tableList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
+        config.setTables(KimPlusGeneratorHelper.getInstance().getTableInfoList(config, tableList, tables));
         return config;
     }
 
@@ -326,44 +329,22 @@ public class ConfigFormDemo extends JFrame {
             return;
         }
 
-
-        Config configModel = null;
-        GlobalConfig config = new GlobalConfig()
-                .setActiveRecord(false)
-                .setAuthor(configModel.getAuthor())
-                .setOutputDir(configModel.getOutputDir())
-                .setIdType(IdType.AUTO)
-                .setFileOverride(configModel.isFileOverride());
-
-
-//        StrategyConfig strategyConfig = new StrategyConfig();
-//        String tableNames = Lists.transform(KvnPluginContext.instance().getDbTableList(), new Function<DbTable, String>() {
-//            public String apply(DbTable dbTable) {
-//                return dbTable.getName();
-//            }
-//        }).stream().collect(Collectors.joining(","));
-//        strategyConfig
-//                .setCapitalMode(true)
-//                .setEntityLombokModel(true) // lombok支持
-//                .setDbColumnUnderline(true)
-//                .setNaming(NamingStrategy.underline_to_camel)
-////                .setTablePrefix("ts_")
-//                .setInclude(tableNames);//修改替换成你需要的表名，多个表名传数组
-//
-//        PackageConfig packageConfig = new PackageConfig()
-//                .setParent(KvnPluginContext.instance().getPackageName())
-//                .setModuleName(null)
-//                .setController("controller")
-//                .setEntity("entity");
-//
-//        // 当前使用的代码生成模板
-//        TemplateConfig template = new TemplateConfig(PersistentConfig.instance().getCurrTemplateGroupName(), selectTemplateList);
-////        Debugger.debug(template);
-//        new KimPlusAutoGenerator().setTemplate(template).setGlobalConfig(config).setStrategy(strategyConfig).setPackageInfo(packageConfig).setDbTables(KvnPluginContext.instance().getDbTableList()).execute();
+        Config config = this.buildConfig();
+        KimPlusGeneratorHelper.getInstance().generate(config);
+        Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
+        this.dispose();
     }
 
     private void initDataFromCache() {
+        Config config = KimPlusGeneratorHelper.getInstance().readCacheData();
+        if (config == null) {
+            return;
+        }
 
+        PackageConfigs packageConfigs = config.getPackageConfigs();
+        this.basePathField.setText(config.getBasePath());
+        this.tablePrefixField.setText(config.getTablePrefix());
+        this.commonColumnField.setText(config.getLogicColumn());
     }
 
 }
