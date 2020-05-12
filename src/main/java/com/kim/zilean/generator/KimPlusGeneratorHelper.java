@@ -141,7 +141,7 @@ public class KimPlusGeneratorHelper {
         tableInfo.setDao(buildClass(config, packageConfigs.getDao(), className, propsName));
 
         // service
-        tableInfo.setService(buildClass(config, packageConfigs.getService(), className, propsName));
+        tableInfo.setService(buildClass(config, packageConfigs.getService(), String.format("I%s", className), propsName));
 
         // serviceImpl
         tableInfo.setServiceImpl(buildClass(config, packageConfigs.getServiceImpl(), className, propsName));

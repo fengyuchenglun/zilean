@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 */
 @Service
 @Slf4j
- public class ${table.serviceImplName} extends ServiceImpl<I${table.dao.name}, ${table.entity.name}> implements I${${table.service.name}}{
+ public class ${table.serviceImpl.name} extends ServiceImpl<${table.dao.name}, ${table.entity.name}> implements I$${table.service.name}{
 
  <#if extConfig.keyTableField??>
   <#assign keyFieldName = extConfig.keyTableField.fieldName>

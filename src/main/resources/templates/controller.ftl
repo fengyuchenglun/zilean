@@ -24,7 +24,7 @@ import ${table.service.pkg}.I${table.service.name};
 /**
 * ${propsName} controller.
 *
-* ${table.comment}
+* ${table.comment!''}
 *
 * @author ${config.author}
 * @since ${date?string("yyyy-MM-dd HH:mm")}
@@ -38,8 +38,8 @@ import ${table.service.pkg}.I${table.service.name};
 @RequestMapping("${config.controllerUrlPrefix}${propsName}s")
 public class ${table.controller.name} {
 
-@Autowired
-private I${table.service.name} ${table.service.propsName};
+    @Autowired
+    private I${table.service.name} ${table.service.propsName};
 
 <#if extConfig.keyTableField??>
     <#assign keyFieldName = extConfig.keyTableField.fieldName>
@@ -53,7 +53,7 @@ private I${table.service.name} ${table.service.propsName};
     */
     @PostMapping
     public ${keyFieldType} add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class})</#if> ${table.form.name} form) {
-    return ${table.service.propsName}.add${simpleClassName}(form);
+        return ${table.service.propsName}.add${simpleClassName}(form);
     }
 
     /**
@@ -64,7 +64,7 @@ private I${table.service.name} ${table.service.propsName};
     */
     @DeleteMapping("/{${keyFieldName}}")
     public Boolean remove${simpleClassName}(@PathVariable("${keyFieldName}") ${keyFieldType} ${keyFieldName}) {
-    return ${table.service.propsName}.remove${simpleClassName}(${keyFieldName});
+        return ${table.service.propsName}.remove${simpleClassName}(${keyFieldName});
     }
 <#else>
     /**
@@ -75,35 +75,35 @@ private I${table.service.name} ${table.service.propsName};
     */
     @PostMapping
     public Boolean add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class})</#if> ${table.form.name} form) {
-    return ${table.service.propsName}.add${simpleClassName}(form);
+        return ${table.service.propsName}.add${simpleClassName}(form);
     }
 </#if>
 
-/**
-* edit ${propsName}.
-*
-* @param form ${propsName} form object
-* @return the boolean
-*/
-@PutMapping
-public Boolean edit${simpleClassName}(@RequestBody <#if config.kim>@Validated({Edit.class})</#if> ${table.form.name} form) {
-return ${table.service.propsName}.edit${simpleClassName}(form);
-}
+    /**
+    * edit ${propsName}.
+    *
+    * @param form ${propsName} form object
+    * @return the boolean
+    */
+    @PutMapping
+    public Boolean edit${simpleClassName}(@RequestBody <#if config.kim>@Validated({Edit.class})</#if> ${table.form.name} form) {
+        return ${table.service.propsName}.edit${simpleClassName}(form);
+    }
 
-/**
-* get ${propsName} page List.
-*
-* @param query the ${propsName} query object
-* @return page
-*/
-@GetMapping
-public IPage<${table.vo.name}> get${simpleClassName}PageList(${table.query.name} query) {
-IPage<${table.dto.name}> page = ${table.service.propsName}.get${simpleClassName}PageList(query);
-if (null != page) {
-return page.setRecords(BeanUtils.copyList(page.getRecords(), ${table.vo.name}.class));
-}
-return null;
-}
+    /**
+    * get ${propsName} page List.
+    *
+    * @param query the ${propsName} query object
+    * @return page
+    */
+    @GetMapping
+    public IPage<${table.vo.name}> get${simpleClassName}PageList(${table.query.name} query) {
+        IPage<${table.dto.name}> page = ${table.service.propsName}.get${simpleClassName}PageList(query);
+        if (null != page) {
+            return page.setRecords(BeanUtils.copyList(page.getRecords(), ${table.vo.name}.class));
+        }
+        return null;
+    }
 
 }
 
