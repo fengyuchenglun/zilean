@@ -26,6 +26,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.io.File;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,7 +116,6 @@ public class ConfigFormDemo extends JFrame {
     private JTextField controllerUrlPrefixField;
 
     //------------基本配置-------------
-    private JCheckBox entityLombokModelField;
     private JTextField commonColumnField;
     private JTextField logicColumnField;
     private JCheckBox isOpenCheckBox;
@@ -126,8 +126,9 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox xmlCheckbox;
     private JCheckBox controllerCheckbox;
     private JCheckBox fileOverrideCheckBox;
-    private JCheckBox KotlinCheckBox;
+    private JCheckBox kotlinCheckBox;
     private JCheckBox swaggerCheckBox;
+    private JCheckBox kimCheckBox;
 
 
     /**
@@ -152,9 +153,9 @@ public class ConfigFormDemo extends JFrame {
         this.rootPane.setDefaultButton(okBtn);
         this.setVisible(true);
 
-
         // 初始化数据
         this.initData();
+        // 绑定事件
         this.bindListeners();
     }
 
@@ -184,12 +185,13 @@ public class ConfigFormDemo extends JFrame {
 
         if (project != null) {
             this.basePathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
-            this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mappers"));
-//            if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
-//                this.cacheBtn.setEnabled(true);
-//            }
+            this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mapper"));
+            String dataCacheFile = ZileanContext.getInstance().getDataCacheFile();
+            if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
+                this.previousConfigBtn.setEnabled(true);
+            }
         }
-        this.commonColumnField.setText("id,create_time,update_time");
+        this.commonColumnField.setText(DEFAULT_COMMON_COLUMN_FIELD);
         this.logicColumnField.setText(DEFAULT_LOGIC_DELETE_FIELD);
         this.controllerUrlPrefixField.setText(DEFAULT_CONTROLLER_URL_PREFIX);
         this.authorField.setText(StringUtils.isBlank(System.getProperty("user.name")) ? System.getProperty("user.name") : DEFAULT_AUTHOR);
@@ -213,17 +215,24 @@ public class ConfigFormDemo extends JFrame {
      */
     private void bindListeners() {
         FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
+        // 选择根路径
         this.basePathField.addActionListener(e -> {
             FileChooser.chooseFile(folderChooser, project, this, null, x -> {
-                this.basePathField.setText(x.getPath());
-                this.setAlwaysOnTop(true);
+                String basePath = x.getPath();
+                this.basePathField.setText(basePath.concat("/src/main/java"));
+                String baseXmlPath = basePath + "/src/main/resources/mapper";
+                if (StringUtils.isNotBlank(this.moduleNameField.getText())) {
+                    baseXmlPath = baseXmlPath + File.separator + this.moduleNameField.getText();
+                }
+                this.xmlPathField.setText(baseXmlPath);
+//                this.setAlwaysOnTop(true);
             });
         });
 
         this.xmlPathField.addActionListener(e -> {
             FileChooser.chooseFile(folderChooser, project, this, null, x -> {
                 this.xmlPathField.setText(x.getPath());
-                this.setAlwaysOnTop(true);
+//                this.setAlwaysOnTop(true);
             });
         });
 
@@ -277,19 +286,22 @@ public class ConfigFormDemo extends JFrame {
         String parent = this.parentField.getText();
         String moduleName = this.moduleNameField.getText();
         String basePackage = parent;
+        String baseXmlPath = this.xmlPathField.getText();
         if (StringUtils.isNotBlank(moduleName)) {
             basePackage = ZileanUtils.joinPackage(parent, moduleName + DOT);
+            baseXmlPath = baseXmlPath + File.separator + moduleName;
         }
         this.entityPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.entity"));
         this.dtoPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.dto"));
-        this.voPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.vo"));
-        this.queryPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.query"));
-        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.form"));
+        this.voPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.vo"));
+        this.queryPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.query"));
+        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.form"));
 
         this.daoPackageField.setText(ZileanUtils.joinPackage(basePackage, "dao"));
         this.servicePackageField.setText(ZileanUtils.joinPackage(basePackage, "service"));
         this.serviceImplPackageField.setText(ZileanUtils.joinPackage(basePackage, "service.impl"));
         this.controllerPackageField.setText(ZileanUtils.joinPackage(basePackage, "controller"));
+        this.xmlPathField.setText(baseXmlPath);
     }
 
 
@@ -311,7 +323,7 @@ public class ConfigFormDemo extends JFrame {
 
         PackageConfigs packageConfigs = new PackageConfigs();
         packageConfigs.setEntity(new PackageConfig(this.entityPackageField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
-        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.daoSuffixField.getText(), this.dtoCheckbox.isSelected()));
+        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.dtoSuffixField.getText(), this.dtoCheckbox.isSelected()));
         packageConfigs.setVo(new PackageConfig(this.voPackageField.getText(), this.voSuffixField.getText(), this.voCheckbox.isSelected()));
         packageConfigs.setForm(new PackageConfig(this.formPackageField.getText(), this.formSuffixField.getText(), this.formCheckbox.isSelected()));
         packageConfigs.setQuery(new PackageConfig(this.queryPackageField.getText(), this.querySuffixField.getText(), this.queryCheckbox.isSelected()));
@@ -321,6 +333,13 @@ public class ConfigFormDemo extends JFrame {
         packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
         packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), this.controllerCheckbox.isSelected()));
         config.setPackageConfigs(packageConfigs);
+
+        config.setLombok(this.fileOverrideCheckBox.isSelected());
+        config.setOpen(this.isOpenCheckBox.isSelected());
+        config.setFileOverride(this.fileOverrideCheckBox.isSelected());
+        config.setKim(this.kimCheckBox.isSelected());
+        config.setKotlin(this.kotlinCheckBox.isSelected());
+        config.setSwagger(this.swaggerCheckBox.isSelected());
 
 
         ZileanContext.getInstance().setSelectedTableList(tableList.getSelectedValuesList());
@@ -338,7 +357,13 @@ public class ConfigFormDemo extends JFrame {
             return;
         }
 
+        if (StringUtils.isBlank(this.parentField.getText())) {
+            Messages.showMessageDialog(project, "包路径必填", "提示", Messages.getInformationIcon());
+            return;
+        }
+
         Config config = this.buildConfig();
+        KimPlusGeneratorHelper.getInstance().cacheGeneratorData(config);
         KimPlusGeneratorHelper.getInstance().generate(config);
         Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
         this.dispose();
@@ -349,7 +374,6 @@ public class ConfigFormDemo extends JFrame {
         if (config == null) {
             return;
         }
-
         PackageConfigs packageConfigs = config.getPackageConfigs();
         this.basePathField.setText(config.getBasePath());
         this.parentField.setText(config.getParent());
@@ -361,21 +385,36 @@ public class ConfigFormDemo extends JFrame {
         this.commonColumnField.setText(config.getLogicColumn());
 
         this.entityPackageField.setText(packageConfigs.getEntity().getPkg());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
+        this.dtoPackageField.setText(packageConfigs.getDto().getPkg());
+        this.voPackageField.setText(packageConfigs.getVo().getPkg());
+        this.formPackageField.setText(packageConfigs.getForm().getPkg());
+        this.queryPackageField.setText(packageConfigs.getQuery().getPkg());
 
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
-        this.commonColumnField.setText(config.getLogicColumn());
+        this.daoPackageField.setText(packageConfigs.getDao().getPkg());
+        this.xmlPathField.setText(packageConfigs.getXml().getPkg());
+        this.serviceImplPackageField.setText(packageConfigs.getService().getPkg());
+        this.servicePackageField.setText(packageConfigs.getServiceImpl().getPkg());
+        this.controllerPackageField.setText(packageConfigs.getController().getPkg());
 
+        this.entityCheckbox.setSelected(packageConfigs.getEntity().isNeed());
+        this.dtoCheckbox.setSelected(packageConfigs.getDto().isNeed());
+        this.voCheckbox.setSelected(packageConfigs.getVo().isNeed());
+        this.queryCheckbox.setSelected(packageConfigs.getQuery().isNeed());
+        this.formCheckbox.setSelected(packageConfigs.getForm().isNeed());
+
+
+        this.daoCheckbox.setSelected(packageConfigs.getDao().isNeed());
+        this.xmlCheckbox.setSelected(packageConfigs.getXml().isNeed());
+        this.serviceCheckbox.setSelected(packageConfigs.getService().isNeed());
+        this.serviceImplCheckbox.setSelected(packageConfigs.getServiceImpl().isNeed());
+        this.controllerCheckbox.setSelected(packageConfigs.getController().isNeed());
+
+        this.lombokCheckBox.setSelected(config.isLombok());
+        this.kotlinCheckBox.setSelected(config.isKotlin());
+        this.swaggerCheckBox.setSelected(config.isSwagger());
+        this.fileOverrideCheckBox.setSelected(config.isFileOverride());
+        this.isOpenCheckBox.setSelected(config.isOpen());
+        this.kimCheckBox.setSelected(config.isKim());
     }
 
 }

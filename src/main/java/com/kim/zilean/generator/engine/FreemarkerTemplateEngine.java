@@ -15,9 +15,7 @@
  */
 package com.kim.zilean.generator.engine;
 
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
-import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
 import com.intellij.openapi.project.Project;
 import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.ConfigFormDemo;

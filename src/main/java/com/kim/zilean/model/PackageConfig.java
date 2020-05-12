@@ -3,6 +3,8 @@ package com.kim.zilean.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 包配置路径
  *
@@ -12,7 +14,8 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class PackageConfig {
+public class PackageConfig implements Serializable {
+    private static final long serialVersionUID = -8542560138912382329L;
     /**
      * 包路径
      * 如com.kim.zilean

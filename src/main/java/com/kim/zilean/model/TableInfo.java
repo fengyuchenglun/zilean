@@ -3,6 +3,7 @@ package com.kim.zilean.model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,11 +15,24 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class TableInfo {
+public class TableInfo implements Serializable {
+    private static final long serialVersionUID = 2331066848350455886L;
     /**
      * 表名
+     * 比如classic_read_article
      */
     private String name;
+    /**
+     * 属性名称
+     * 比如classicReadArticle
+     */
+    private String propsName;
+    /**
+     * 类名称
+     * 比如ClassicReadArticle
+     */
+    private String simpleClassName;
+
     /**
      * 表注释
      */

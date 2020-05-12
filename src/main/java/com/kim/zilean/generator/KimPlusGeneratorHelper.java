@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.kim.zilean.constant.Constants.DOT;
 import static com.kim.zilean.util.ZileanUtils.MYSQL_KEYWORDS;
 
 /**
@@ -75,7 +76,14 @@ public class KimPlusGeneratorHelper {
      */
     private TableInfo buildTableInfoData(Config config, DbTable table) {
         TableInfo tableInfo = new TableInfo();
+        String noPrefixName =
+                config.getTablePrefix().isEmpty() ? table.getName() : table.getName().replaceFirst("^" + config.getTablePrefix(), "");
+        String propsName = com.kim.zilean.util.StringUtils.underlineToCamel(noPrefixName);
+        String className = com.kim.zilean.util.StringUtils.upperFirst(propsName);
+
         tableInfo.setName(table.getName());
+        tableInfo.setPropsName(propsName);
+        tableInfo.setSimpleClassName(className);
         tableInfo.setComment(table.getComment());
 
         final List<String> imports = new ArrayList<>();
@@ -98,48 +106,48 @@ public class KimPlusGeneratorHelper {
             tableField.setInCommon(config.isCommonColumn(c.getName()));
             tableField.setTableLogic(config.isLogicColumn(c.getName()));
             tableField.setMysqlKeyword(MYSQL_KEYWORDS.contains(c.getName().toUpperCase()));
-            if (StringUtils.isNotBlank(tableField.getJavaType())) {
+            if (StringUtils.contains(tableField.getJavaType(), DOT)) {
                 imports.add(tableField.getJavaType());
                 tableField.setSimpleJavaType(tableField.getJavaType().substring(tableField.getJavaType().lastIndexOf('.') + 1));
             } else {
                 tableField.setSimpleJavaType(tableField.getJavaType());
             }
+            //todo 可能多个字段为联合主键的情况
+            if (tableField.isPrimaryKey()) {
+                config.getExtConfig().put("keyTableField", tableField);
+            }
             return tableField;
         }).collect(Collectors.toList());
         tableInfo.setColumns(list);
 
-        String noPrefixName = config.getTablePrefix().isEmpty() ? table.getName() : table.getName().replaceFirst("^" + config.getTablePrefix(), "");
-        String beanName = com.kim.zilean.util.StringUtils.underlineToCamel(noPrefixName);
-        String singleName = com.kim.zilean.util.StringUtils.upperFirst(beanName);
-
         PackageConfigs packageConfigs = config.getPackageConfigs();
         // entity
-        tableInfo.setEntity(buildClass(config, packageConfigs.getEntity(), singleName, beanName));
+        tableInfo.setEntity(buildClass(config, packageConfigs.getEntity(), className, propsName));
         tableInfo.getEntity().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
         // dto
-        tableInfo.setDto(buildClass(config, packageConfigs.getDto(), singleName, beanName));
+        tableInfo.setDto(buildClass(config, packageConfigs.getDto(), className, propsName));
         tableInfo.getDto().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
         // vo
-        tableInfo.setVo(buildClass(config, packageConfigs.getVo(), singleName, beanName));
+        tableInfo.setVo(buildClass(config, packageConfigs.getVo(), className, propsName));
         tableInfo.getVo().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
         // form
-        tableInfo.setForm(buildClass(config, packageConfigs.getForm(), singleName, beanName));
+        tableInfo.setForm(buildClass(config, packageConfigs.getForm(), className, propsName));
         tableInfo.getForm().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
         // query
-        tableInfo.setQuery(buildClass(config, packageConfigs.getQuery(), singleName, beanName));
-        tableInfo.getVo().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
+        tableInfo.setQuery(buildClass(config, packageConfigs.getQuery(), className, propsName));
+        tableInfo.getQuery().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
 
         // dao
-        tableInfo.setDao(buildClass(config, packageConfigs.getDao(), singleName, beanName));
+        tableInfo.setDao(buildClass(config, packageConfigs.getDao(), className, propsName));
 
         // service
-        tableInfo.setService(buildClass(config, packageConfigs.getService(), singleName, beanName));
+        tableInfo.setService(buildClass(config, packageConfigs.getService(), className, propsName));
 
         // serviceImpl
-        tableInfo.setServiceImpl(buildClass(config, packageConfigs.getServiceImpl(), singleName, beanName));
+        tableInfo.setServiceImpl(buildClass(config, packageConfigs.getServiceImpl(), className, propsName));
 
         // controller
-        tableInfo.setController(buildClass(config, packageConfigs.getController(), singleName, beanName));
+        tableInfo.setController(buildClass(config, packageConfigs.getController(), className, propsName));
 
         // xml
         tableInfo.setXmlPath(packageConfigs.getXml().getPkg() + "/" + tableInfo.getEntity().getName() + packageConfigs.getXml().getSuffix() + ".xml");
@@ -147,11 +155,12 @@ public class KimPlusGeneratorHelper {
         return tableInfo;
     }
 
-    private Classes buildClass(Config config, PackageConfig packageConfig, String singleName, String beanName) {
+
+    private Classes buildClass(Config config, PackageConfig packageConfig, String className, String propsName) {
         Classes clz = new Classes();
         clz.setPkg(packageConfig.getPkg());
-        clz.setName(singleName + packageConfig.getSuffix());
-        clz.setPropsName(beanName + packageConfig.getSuffix());
+        clz.setName(className + packageConfig.getSuffix());
+        clz.setPropsName(propsName + packageConfig.getSuffix());
         clz.setClassName(clz.getPkg() + "." + clz.getName());
         clz.setFilePath(config.getBasePath() + "/" + clz.getPkg().replaceAll("\\.", "/"));
         clz.setFileName(clz.getFilePath() + "/" + clz.getName() + ".java");

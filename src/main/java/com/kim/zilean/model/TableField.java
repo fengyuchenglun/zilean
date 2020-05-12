@@ -4,6 +4,7 @@ import com.intellij.database.model.DataType;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.sql.JDBCType;
 
 /**
@@ -15,11 +16,13 @@ import java.sql.JDBCType;
  */
 @Data
 @Accessors(chain = true)
-public class TableField {
+public class TableField implements Serializable {
+    private static final long serialVersionUID = -522912328270540965L;
     /**
      *  列名称（如 login_password）
      */
     private String name;
+
     private String type;
     /**
      * 属性名称（如 loginPassword）

@@ -2,6 +2,8 @@ package com.kim.zilean.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * The type Class packages.
  *
@@ -10,7 +12,8 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
-public class PackageConfigs {
+public class PackageConfigs implements Serializable {
+    private static final long serialVersionUID = 2987824302961994414L;
     private PackageConfig entity;
     private PackageConfig dto;
     private PackageConfig vo;

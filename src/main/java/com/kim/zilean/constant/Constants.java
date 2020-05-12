@@ -13,6 +13,8 @@ public class Constants {
      */
     public static final String DOT = ".";
 
+    public static final String DEFAULT_COMMON_COLUMN_FIELD = "is_deleted";
+
     /**
      * 默认逻辑删除字段
      */

@@ -19,11 +19,8 @@ import com.kim.zilean.form.component.PackageChooseTextField;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
-
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -229,7 +226,7 @@ public class ConfigForm extends JFrame {
 
         if (project != null) {
             this.basePathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
-            this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mappers"));
+            this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mapper"));
             if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
                 this.cacheBtn.setEnabled(true);
             }
@@ -423,7 +420,7 @@ public class ConfigForm extends JFrame {
 //            doGenTemp(t, data.getTypes().getDao(), gt, "/dao.ftl", t.getDao().getFileName(), data);
 //            doGenTemp(t, data.getTypes().getService(), gt, "/service.ftl", t.getService().getFileName(), data);
 //            doGenTemp(t, data.getTypes().getServiceImpl(), gt, "/service-impl.ftl", t.getServiceImpl().getFileName(), data);
-//            doGenTemp(t, data.getTypes().getMapper(), gt, "/mapper.ftl", t.getMapperPath(), data);
+//            doGenTemp(t, data.getTypes().getMapper(), gt, "/xml.ftl", t.getMapperPath(), data);
 //        });
 //        Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
 //        this.dispose();

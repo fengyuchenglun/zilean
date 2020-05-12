@@ -2,6 +2,7 @@ package com.kim.zilean.model;
 
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 界面配置类
@@ -20,6 +22,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class Config implements Serializable {
 
+
+    private static final long serialVersionUID = 7933792178946657838L;
     /**
      * 生成文件的输出根目录 System.getProperty("user.dir")
      */
@@ -62,6 +66,18 @@ public class Config implements Serializable {
      */
     private boolean isOpen = false;
     /**
+     * 是否使用Lombok
+     */
+    private boolean lombok = true;
+    /**
+     * 是否使用swagger
+     */
+    private boolean swagger = false;
+    /**
+     * 是否使用kotlin
+     */
+    private boolean kotlin = false;
+    /**
      * 各个类型的配置
      */
     private PackageConfigs packageConfigs;
@@ -79,8 +95,16 @@ public class Config implements Serializable {
      * （可空，一般将公共列写入实体类的父类中，英文逗号分隔，不留空格）
      */
     private String commonColumn;
+    /**
+     * 是否为kim框架
+     * 默认不使用
+     */
+    private boolean kim = false;
 
-
+    /**
+     * 自定义参数配置
+     */
+    private Map<String, Object> extConfig = Maps.newHashMap();
 
     /**
      * 获取公共列列表
@@ -104,6 +128,7 @@ public class Config implements Serializable {
 
     /**
      * 获取逻辑列列表
+     *
      * @return
      */
     @JsonIgnore
@@ -113,6 +138,7 @@ public class Config implements Serializable {
 
     /**
      * 判断列是否逻辑列
+     *
      * @param column
      * @return
      */

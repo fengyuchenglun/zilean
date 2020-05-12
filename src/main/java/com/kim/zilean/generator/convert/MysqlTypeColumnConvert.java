@@ -1,10 +1,6 @@
 package com.kim.zilean.generator.convert;
 
-import com.kim.zilean.generator.convert.IColumnType;
-
-import javax.swing.text.html.Option;
 import java.sql.JDBCType;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,21 +10,21 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public enum MysqlTypeColumnConvert implements IColumnType {
-    BIT("bit", JDBCType.BIT, ""),
-    TINYINT("tinyint", JDBCType.TINYINT, ""),
-    SMALLINT("smallint", JDBCType.SMALLINT, ""),
-    MEDIUMINT("mediumint", JDBCType.INTEGER, ""),
-    INTEGER("int", JDBCType.INTEGER, ""),
-    BIGINT("bigint", JDBCType.BIGINT, ""),
-    FLOAT("float", JDBCType.FLOAT, ""),
-    REAL("real", JDBCType.REAL, ""),
-    DOUBLE("double", JDBCType.DOUBLE, ""),
-    NUMERIC("numeric", JDBCType.NUMERIC, ""),
+    BIT("bit", JDBCType.BIT, "Boolean"),
+    TINYINT("tinyint", JDBCType.TINYINT, "Integer"),
+    SMALLINT("smallint", JDBCType.SMALLINT, "Integer"),
+    MEDIUMINT("mediumint", JDBCType.INTEGER, "Integer"),
+    INTEGER("int", JDBCType.INTEGER, "Integer"),
+    BIGINT("bigint", JDBCType.BIGINT, "Long"),
+    FLOAT("float", JDBCType.FLOAT, "Float"),
+    REAL("real", JDBCType.REAL, "Object"),
+    DOUBLE("double", JDBCType.DOUBLE, "Double"),
+    NUMERIC("numeric", JDBCType.NUMERIC, "Number"),
     DECIMAL("decimal", JDBCType.DECIMAL, "java.math.BigDecimal"),
-    CHAR("char", JDBCType.CHAR, ""),
-    VARCHAR("varchar", JDBCType.VARCHAR, ""),
-    LONGVARCHAR("longvarchar", JDBCType.LONGVARCHAR, ""),
-    TEXT("text", JDBCType.LONGNVARCHAR, ""),
+    CHAR("char", JDBCType.CHAR, "String"),
+    VARCHAR("varchar", JDBCType.VARCHAR, "String"),
+    LONGVARCHAR("longvarchar", JDBCType.LONGVARCHAR, "String"),
+    TEXT("text", JDBCType.LONGNVARCHAR, "String"),
     DATE("date", JDBCType.DATE, "java.time.LocalDate"),
     TIME("time", JDBCType.TIME, "java.time.LocalTime"),
     DATETIME("datetime", JDBCType.TIMESTAMP, "java.time.LocalDateTime"),
