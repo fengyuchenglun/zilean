@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.database.model.DasColumn;
 import com.intellij.database.psi.DbTable;
 import com.intellij.database.util.DasUtil;
-import com.intellij.ui.components.JBList;
 import com.kim.zilean.ZileanContext;
 import com.kim.zilean.generator.convert.IColumnType;
 import com.kim.zilean.generator.convert.MysqlTypeColumnConvert;
@@ -53,28 +52,19 @@ public class KimPlusGeneratorHelper {
         return KimPlusGeneratorHelpInstance.INSTANCE;
     }
 
-    private static class KimPlusGeneratorHelpInstance {
-        /**
-         * The constant INSTANCE.
-         */
-        private static final KimPlusGeneratorHelper INSTANCE = new KimPlusGeneratorHelper();
-    }
-
-
     /**
      * 获取表格数据
      *
-     * @param config    the config
-     * @param tableList the table list
-     * @param tables    the tables
+     * @param config the config
      * @return the table info list
      */
-    public List<TableInfo> getTableInfoList(Config config, JBList<String> tableList, Map<String, DbTable> tables) {
-        return tableList.getSelectedValuesList().parallelStream().map(
+    public List<TableInfo> getTableInfoList(Config config) {
+        Map<String, DbTable> tables = ZileanContext.getInstance().getTableMap();
+        List<String> selectedTableList = ZileanContext.getInstance().getSelectedTableList();
+        return selectedTableList.parallelStream().map(
                 i -> buildTableInfoData(config, tables.get(i)))
                 .collect(Collectors.toList());
     }
-
 
     /**
      * 构建table数据
@@ -157,7 +147,6 @@ public class KimPlusGeneratorHelper {
         return tableInfo;
     }
 
-
     private Classes buildClass(Config config, PackageConfig packageConfig, String singleName, String beanName) {
         Classes clz = new Classes();
         clz.setPkg(packageConfig.getPkg());
@@ -169,17 +158,21 @@ public class KimPlusGeneratorHelper {
         return clz;
     }
 
+    /**
+     * Generate.
+     *
+     * @param config the config
+     */
     public void generate(Config config) {
         AbstractTemplateEngine templateEngine = new FreemarkerTemplateEngine();
         templateEngine.init(config);
         templateEngine.batchOutput();
     }
 
-
     /**
      * 获取配置数据
      *
-     * @param config
+     * @param config the config
      */
     public void cacheGeneratorData(Config config) {
         String dataCacheFile = ZileanContext.getInstance().getDataCacheFile();
@@ -196,7 +189,7 @@ public class KimPlusGeneratorHelper {
     /**
      * 读取配置数据
      *
-     * @return
+     * @return config config
      */
     public Config readCacheData() {
         String dataCacheFile = ZileanContext.getInstance().getDataCacheFile();
@@ -213,5 +206,12 @@ public class KimPlusGeneratorHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static class KimPlusGeneratorHelpInstance {
+        /**
+         * The constant INSTANCE.
+         */
+        private static final KimPlusGeneratorHelper INSTANCE = new KimPlusGeneratorHelper();
     }
 }

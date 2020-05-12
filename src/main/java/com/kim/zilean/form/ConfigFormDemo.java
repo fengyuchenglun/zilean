@@ -118,12 +118,17 @@ public class ConfigFormDemo extends JFrame {
     private JCheckBox entityLombokModelField;
     private JTextField commonColumnField;
     private JTextField logicColumnField;
-    private JCheckBox 是否打开CheckBox;
+    private JCheckBox isOpenCheckBox;
+    private JCheckBox dtoCheckbox;
+    private JCheckBox voCheckbox;
+    private JCheckBox queryCheckbox;
+    private JCheckBox formCheckbox;
+    private JCheckBox xmlCheckbox;
+    private JCheckBox controllerCheckbox;
+    private JCheckBox fileOverrideCheckBox;
+    private JCheckBox KotlinCheckBox;
+    private JCheckBox swaggerCheckBox;
 
-    /**
-     * 表名与表对象map
-     */
-    private Map<String, DbTable> tables;
 
     /**
      * Instantiates a new Config form.
@@ -169,8 +174,9 @@ public class ConfigFormDemo extends JFrame {
         DbElement parent = table.getDasParent();
         // tables表示所有的表
         List<DbTable> tables = parent == null ? selectedTables : parent.getDasChildren(ObjectKind.TABLE).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).toList();
-        this.tables = tables.parallelStream().collect(Collectors.toMap(DasObject::getName, i -> i));
         Vector<String> tableNames = tables.stream().map(DasObject::getName).collect(Collectors.toCollection(Vector::new));
+        ZileanContext.getInstance().setTableMap(tables.parallelStream().collect(Collectors.toMap(DasObject::getName, i -> i)));
+        ZileanContext.getInstance().setTableList(Collections.list(tableNames.elements()));
         // 设置表列表
         this.tableList.setListData(tableNames);
         // 选择的表
@@ -183,7 +189,7 @@ public class ConfigFormDemo extends JFrame {
 //                this.cacheBtn.setEnabled(true);
 //            }
         }
-//        this.commonColumnsField.setText("id,create_time,update_time");
+        this.commonColumnField.setText("id,create_time,update_time");
         this.logicColumnField.setText(DEFAULT_LOGIC_DELETE_FIELD);
         this.controllerUrlPrefixField.setText(DEFAULT_CONTROLLER_URL_PREFIX);
         this.authorField.setText(StringUtils.isBlank(System.getProperty("user.name")) ? System.getProperty("user.name") : DEFAULT_AUTHOR);
@@ -304,18 +310,21 @@ public class ConfigFormDemo extends JFrame {
         config.setControllerUrlPrefix(this.controllerUrlPrefixField.getText());
 
         PackageConfigs packageConfigs = new PackageConfigs();
-        packageConfigs.setEntity(new PackageConfig(this.entityPackageField.getText(), this.entitySuffixField.getText(), true));
-        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.daoSuffixField.getText(), true));
-        packageConfigs.setVo(new PackageConfig(this.voPackageField.getText(), this.voSuffixField.getText(), true));
-        packageConfigs.setForm(new PackageConfig(this.formPackageField.getText(), this.formSuffixField.getText(), true));
-        packageConfigs.setQuery(new PackageConfig(this.queryPackageField.getText(), this.querySuffixField.getText(), true));
-        packageConfigs.setDao(new PackageConfig(this.daoPackageField.getText(), this.daoSuffixField.getText(), true));
-        packageConfigs.setXml(new PackageConfig(this.xmlPathField.getText(), this.xmlSuffixField.getText(), true));
-        packageConfigs.setService(new PackageConfig(this.servicePackageField.getText(), this.serviceSuffixField.getText(), true));
-        packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), true));
-        packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), true));
+        packageConfigs.setEntity(new PackageConfig(this.entityPackageField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
+        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.daoSuffixField.getText(), this.dtoCheckbox.isSelected()));
+        packageConfigs.setVo(new PackageConfig(this.voPackageField.getText(), this.voSuffixField.getText(), this.voCheckbox.isSelected()));
+        packageConfigs.setForm(new PackageConfig(this.formPackageField.getText(), this.formSuffixField.getText(), this.formCheckbox.isSelected()));
+        packageConfigs.setQuery(new PackageConfig(this.queryPackageField.getText(), this.querySuffixField.getText(), this.queryCheckbox.isSelected()));
+        packageConfigs.setDao(new PackageConfig(this.daoPackageField.getText(), this.daoSuffixField.getText(), this.daoCheckbox.isSelected()));
+        packageConfigs.setXml(new PackageConfig(this.xmlPathField.getText(), this.xmlSuffixField.getText(), this.xmlCheckbox.isSelected()));
+        packageConfigs.setService(new PackageConfig(this.servicePackageField.getText(), this.serviceSuffixField.getText(), this.serviceCheckbox.isSelected()));
+        packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
+        packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), this.controllerCheckbox.isSelected()));
         config.setPackageConfigs(packageConfigs);
-        config.setTables(KimPlusGeneratorHelper.getInstance().getTableInfoList(config, tableList, tables));
+
+
+        ZileanContext.getInstance().setSelectedTableList(tableList.getSelectedValuesList());
+        config.setTables(KimPlusGeneratorHelper.getInstance().getTableInfoList(config));
         return config;
     }
 
@@ -343,8 +352,30 @@ public class ConfigFormDemo extends JFrame {
 
         PackageConfigs packageConfigs = config.getPackageConfigs();
         this.basePathField.setText(config.getBasePath());
+        this.parentField.setText(config.getParent());
+        this.moduleNameField.setText(config.getModuleName());
         this.tablePrefixField.setText(config.getTablePrefix());
+        this.authorField.setText(config.getAuthor());
+        this.controllerUrlPrefixField.setText(config.getControllerUrlPrefix());
+        this.logicColumnField.setText(config.getLogicColumn());
         this.commonColumnField.setText(config.getLogicColumn());
+
+        this.entityPackageField.setText(packageConfigs.getEntity().getPkg());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+
     }
 
 }
