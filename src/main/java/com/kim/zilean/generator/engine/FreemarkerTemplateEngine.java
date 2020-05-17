@@ -18,7 +18,7 @@ package com.kim.zilean.generator.engine;
 import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.intellij.openapi.project.Project;
 import com.kim.zilean.ZileanContext;
-import com.kim.zilean.form.ConfigFormDemo;
+import com.kim.zilean.form.ConfigForm;
 import com.kim.zilean.model.Config;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -76,7 +76,7 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
             }
         }
         if (!hasCustomTemp) {
-            configuration.setClassLoaderForTemplateLoading(ConfigFormDemo.class.getClassLoader(), "templates");
+            configuration.setClassLoaderForTemplateLoading(ConfigForm.class.getClassLoader(), "templates");
         }
     }
 

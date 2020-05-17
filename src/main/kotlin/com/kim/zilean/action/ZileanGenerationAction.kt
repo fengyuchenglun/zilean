@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.ui.Messages
-import com.kim.zilean.form.ConfigFormDemo
+import com.kim.zilean.form.ConfigForm
 
 class ZileanGenerationAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
@@ -17,7 +17,7 @@ class ZileanGenerationAction : AnAction() {
             Messages.showMessageDialog("请至少选择一张数据表", "提示", Messages.getInformationIcon())
             return
         }
-        ConfigFormDemo("MyBatis-Plus 代码生产工具", e)
+        ConfigForm("MyBatis-Plus 代码生产工具", e)
     }
 
     override fun update(e: AnActionEvent) {

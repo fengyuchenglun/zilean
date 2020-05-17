@@ -1,6 +1,7 @@
 package com.kim.zilean.generator;
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.database.model.DasColumn;
 import com.intellij.database.psi.DbTable;
@@ -42,6 +43,7 @@ public class KimPlusGeneratorHelper {
      * Instantiates a new Kim plus generator helper.
      */
     KimPlusGeneratorHelper() {
+        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /**
@@ -94,7 +96,7 @@ public class KimPlusGeneratorHelper {
             TableField tableField = new TableField();
             tableField.setName(c.getName());
             tableField.setFieldName(com.kim.zilean.util.StringUtils.underlineToCamel(c.getName()));
-            tableField.setDataType(c.getDataType());
+            //tableField.setDataType(c.getDataType());
             //todo 支持日期类型
             IColumnType columnType = MysqlTypeColumnConvert.typeOf(c.getDataType().typeName.split(" ")[0]);
             tableField.setJdbcType(columnType.getJdbcType());

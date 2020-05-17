@@ -19,13 +19,16 @@ import com.kim.boot.web.mvc.annotation.KimController;
 import ${table.query.className};
 import ${table.form.className};
 import ${table.dto.className};
-import ${table.service.pkg}.I${table.service.name};
+import ${table.vo.className};
+import ${table.service.className};
 
 /**
 * ${propsName} controller.
 *
-* ${table.comment!''}
+<#if table.comment??>
+* ${table.comment}
 *
+</#if>
 * @author ${config.author}
 * @since ${date?string("yyyy-MM-dd HH:mm")}
 */
@@ -39,7 +42,7 @@ import ${table.service.pkg}.I${table.service.name};
 public class ${table.controller.name} {
 
     @Autowired
-    private I${table.service.name} ${table.service.propsName};
+    private ${table.service.name} ${table.service.propsName};
 
 <#if extConfig.keyTableField??>
     <#assign keyFieldName = extConfig.keyTableField.fieldName>
@@ -52,7 +55,7 @@ public class ${table.controller.name} {
     * @return the ${keyFieldType?lower_case}
     */
     @PostMapping
-    public ${keyFieldType} add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class})</#if> ${table.form.name} form) {
+    public ${keyFieldType} add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class}) </#if>${table.form.name} form) {
         return ${table.service.propsName}.add${simpleClassName}(form);
     }
 
@@ -74,7 +77,7 @@ public class ${table.controller.name} {
     * @return the boolean
     */
     @PostMapping
-    public Boolean add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class})</#if> ${table.form.name} form) {
+    public Boolean add${simpleClassName}(@RequestBody <#if config.kim>@Validated({Add.class}) </#if>${table.form.name} form) {
         return ${table.service.propsName}.add${simpleClassName}(form);
     }
 </#if>
@@ -86,7 +89,7 @@ public class ${table.controller.name} {
     * @return the boolean
     */
     @PutMapping
-    public Boolean edit${simpleClassName}(@RequestBody <#if config.kim>@Validated({Edit.class})</#if> ${table.form.name} form) {
+    public Boolean edit${simpleClassName}(@RequestBody <#if config.kim>@Validated({Edit.class}) </#if>${table.form.name} form) {
         return ${table.service.propsName}.edit${simpleClassName}(form);
     }
 

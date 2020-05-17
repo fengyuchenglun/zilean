@@ -97,7 +97,7 @@ public class PackageChooseTextField extends ComponentWithBrowseButton<JTextField
         this.actionListener = e -> {
             PackageChooserDialog chooser = new PackageChooserDialog(title, project);
             chooser.selectPackage(this.getText());
-            chooser.show();
+            //chooser.show();
             final PsiPackage aPackage = chooser.getSelectedPackage();
             if (aPackage != null) {
                 this.setText(aPackage.getQualifiedName());

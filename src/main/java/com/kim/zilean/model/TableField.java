@@ -1,6 +1,5 @@
 package com.kim.zilean.model;
 
-import com.intellij.database.model.DataType;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -38,8 +37,9 @@ public class TableField implements Serializable {
     private String simpleJavaType;
     /**
      * 数据库数据类型（如 varchar）
+     * fixme 此处序列化反序列化需要修复
      */
-    private DataType dataType;
+    //private DataType dataType;
     /**
      * JDBC类型
      */

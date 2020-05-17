@@ -9,7 +9,9 @@ import lombok.experimental.Accessors;
 <#list table.query.imports as imp>
 import ${imp};
 </#list>
-
+<#if config.kim>
+import com.kim.boot.web.converter.result.domain.PageSortQuery;
+</#if>
 /**
  * ${table.comment!table.query.name}
  *
@@ -21,7 +23,7 @@ import ${imp};
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 </#if>
-public class ${table.query.name} implements Serializable {
+public class ${table.query.name} <#if config.kim>extends PageSortQuery </#if>implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +35,24 @@ public class ${table.query.name} implements Serializable {
     private ${column.simpleJavaType} ${column.fieldName};
     </#if>
     </#list>
+<#if !config.kim>
+    /**
+     * 页码
+     */
+    private Long pageNum = 1L;
+    /**
+     * 页大小
+     */
+    private Long pageSize = 1L;
+    /**
+     * 排序字段
+     */
+    private String sortField;
+    /**
+     * 排序顺序
+     */
+    private String sortOrder;
+</#if>
 
     <#--渲染get/set-->
     <#if !config.lombok>
@@ -48,5 +68,37 @@ public class ${table.query.name} implements Serializable {
 
     </#if>
     </#list>
+        <#if !config.kim>
+    public Long getPageNum() {
+        return this.pageNum;
+    }
+
+    public Long getPageSize() {
+        return this.pageSize;
+    }
+
+    public void setPageNum(Long pageNum) {
+        this.pageNum=pageNum;
+    }
+
+    public void setPageSize(Long pageSize) {
+        this.pageSize=pageSize;
+    }
+
+    public String getSortField() {
+        return this.sortField;
+    }
+    public String getSortOrder() {
+        return this.sortQuery.getSortOrder();
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField=sortField;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder=sortOrder;
+    }
+        </#if>
     </#if>
 }

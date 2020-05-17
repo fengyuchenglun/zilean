@@ -3,7 +3,7 @@ package com.kim.zilean;
 import com.intellij.database.psi.DbTable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
-import com.kim.zilean.form.ConfigFormDemo;
+import com.kim.zilean.form.ConfigForm;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class ZileanContext {
     /**
      * 当前页面实例
      */
-    private ConfigFormDemo configForm;
+    private ConfigForm configForm;
 
     private AnActionEvent action;
     /**
@@ -60,7 +60,7 @@ public class ZileanContext {
      *
      * @return the config form
      */
-    public ConfigFormDemo getConfigForm() {
+    public ConfigForm getConfigForm() {
         return configForm;
     }
 
@@ -69,7 +69,7 @@ public class ZileanContext {
      *
      * @param configForm the config form
      */
-    public void setConfigForm(ConfigFormDemo configForm) {
+    public void setConfigForm(ConfigForm configForm) {
         this.configForm = configForm;
     }
 

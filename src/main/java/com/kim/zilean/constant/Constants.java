@@ -13,6 +13,9 @@ public class Constants {
      */
     public static final String DOT = ".";
 
+    /**
+     * 默认公共字段
+     */
     public static final String DEFAULT_COMMON_COLUMN_FIELD = "is_deleted";
 
     /**
@@ -20,49 +23,52 @@ public class Constants {
      */
     public static final String DEFAULT_LOGIC_DELETE_FIELD = "is_deleted";
     /**
-     * The constant DEFAULT_CONTROLLER_URL_PREFIX.
+     * 默认controller前缀
      */
     public static final String DEFAULT_CONTROLLER_URL_PREFIX = "/api/v1";
+    /**
+     * 默认作者姓名
+     */
     public static final String DEFAULT_AUTHOR = "duanledexianxianxian";
 
     /**
-     * entity后缀
+     * 默认entity后缀
      */
     public static final String DEFAULT_ENTITY_SUFFIX = "";
     /**
-     * dto后缀
+     * 默认dto后缀
      */
     public static final String DEFAULT_DTO_SUFFIX = "DTO";
     /**
-     * vo后缀
+     * 默认vo后缀
      */
     public static final String DEFAULT_VO_SUFFIX = "VO";
     /**
-     * query后缀
+     * 默认query后缀
      */
     public static final String DEFAULT_QUERY_SUFFIX = "Query";
     /**
-     * form后缀
+     * 默认form后缀
      */
     public static final String DEFAULT_FORM_SUFFIX = "Form";
     /**
-     * Dao后缀
+     * 默认Dao后缀
      */
     public static final String DEFAULT_DAO_SUFFIX = "Dao";
     /**
-     * Service后缀
+     * 默认Service后缀
      */
     public static final String DEFAULT_SERVICE_SUFFIX = "Service";
     /**
-     * ServiceImpl后缀
+     * 默认ServiceImpl后缀
      */
     public static final String DEFAULT_SERVICE_IMPL_SUFFIX = "ServiceImpl";
     /**
-     * Mapper后缀
+     * 默认Mapper后缀
      */
     public static final String DEFAULT_MAPPER_SUFFIX = "Mapper";
     /**
-     * Controller后缀
+     * 默认Controller后缀
      */
     public static final String DEFAULT_CONTROLLER_SUFFIX = "Controller";
 

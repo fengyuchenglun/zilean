@@ -21,8 +21,6 @@ import java.util.Map;
 @Data
 @Accessors(chain = true)
 public class Config implements Serializable {
-
-
     private static final long serialVersionUID = 7933792178946657838L;
     /**
      * 生成文件的输出根目录 System.getProperty("user.dir")

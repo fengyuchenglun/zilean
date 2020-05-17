@@ -1,130 +1,135 @@
 package com.kim.zilean.form;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.database.model.DasObject;
 import com.intellij.database.model.ObjectKind;
 import com.intellij.database.psi.DbElement;
 import com.intellij.database.psi.DbTable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.psi.PsiElement;
 import com.intellij.ui.components.JBList;
-import com.intellij.util.ui.JBUI;
-import com.kim.zilean.form.component.ClassChooseTextField;
+import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.component.PackageChooseTextField;
+import com.kim.zilean.generator.KimPlusGeneratorHelper;
+import com.kim.zilean.model.Config;
+import com.kim.zilean.model.PackageConfig;
+import com.kim.zilean.model.PackageConfigs;
+import com.kim.zilean.util.ZileanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kim.zilean.constant.Constants.DEFAULT_LOGIC_DELETE_FIELD;
+import static com.kim.zilean.constant.Constants.*;
 
 /**
- * The type Config form.
- *
- * @author duanledexianxianxian
+ * The type Config form demo.
  */
 public class ConfigForm extends JFrame {
+    //-------- 其他变量-------------
+    private final AnActionEvent action;
+    private final Project project;
     private JPanel basePane;
     /**
      * 表列表
      */
     private JBList<String> tableList;
-    /**
-     * 全选/反选按钮
-     */
     private JButton selectBtn;
-    /**
-     * 生成按钮
-     */
     private JButton okBtn;
-    /**
-     * 取消按钮
-     */
     private JButton cancelBtn;
+    private JButton resetBtn;
+    private JCheckBox lombokCheckBox;
+
+
+    //---------基本配置-----------
     /**
      * 生成代码基础路径
      */
     private TextFieldWithBrowseButton basePathField;
     /**
-     * 公共字段
+     * 包路径
      */
-    private JTextField commonColumnsField;
+    private PackageChooseTextField parentField;
     /**
-     * 逻辑字段
+     * 模块名称
      */
-    private JTextField logicDeleteField;
+    private JTextField moduleNameField;
+
+    /**
+     * 表前缀
+     */
+    private JTextField tablePrefixField;
+    /**
+     * 开发人员
+     */
+    private JTextField authorField;
     //---------------domain---------------
     /**
      * entity
      */
     private JCheckBox entityCheckbox;
-    private PackageChooseTextField entityPkgField;
+    private PackageChooseTextField entityPackageField;
     private JTextField entitySuffixField;
-    /**
-     * dto
-     */
-    private JCheckBox dtoCheckbox;
-    private PackageChooseTextField dtoPkgField;
+    private PackageChooseTextField dtoPackageField;
     private JTextField dtoSuffixField;
-    /**
-     * vo
-     */
-    private JCheckBox voCheckbox;
-    private PackageChooseTextField voPkgField;
+    private PackageChooseTextField voPackageField;
     private JTextField voSuffixField;
-    /**
-     * query
-     */
-    private JCheckBox queryCheckbox;
-    private PackageChooseTextField queryPkgField;
+    private PackageChooseTextField queryPackageField;
     private JTextField querySuffixField;
-    /**
-     * form
-     */
-    private JCheckBox formCheckbox;
-    private PackageChooseTextField formPkgField;
-    private JTextField formSuffixField;
 
+    //---------------工程结构---------------
+    private PackageChooseTextField formPackageField;
+    private JTextField formSuffixField;
     /**
      * dao
      */
     private JCheckBox daoCheckbox;
-    private PackageChooseTextField daoPkgField;
+    private PackageChooseTextField daoPackageField;
     private JTextField daoSuffixField;
-    private PackageChooseTextField servicePkgField;
-    private ClassChooseTextField entitySuperClassField;
-
-    private TextFieldWithBrowseButton xmlPathField;
-
-
-    private PackageChooseTextField serviceImplPkgField;
-
-
-    private JTextField tablePrefixField;
-    private JCheckBox columnConstCheckbox;
-    private JCheckBox lombokCheckBox;
-    private JCheckBox tinyintCheckbox;
-    private JButton cacheBtn;
-    private JCheckBox swaggerCheckbox;
-    private JTextField textField1;
-
-    private final Project project;
-    private final String dataCacheFile;
-    private final AnActionEvent action;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private PackageChooseTextField xmlPathField;
+    private JTextField xmlSuffixField;
     /**
-     * 表名与表对象map
+     * service
      */
-    private Map<String, DbTable> tables;
+    private JCheckBox serviceCheckbox;
+    private PackageChooseTextField servicePackageField;
+    private JTextField serviceSuffixField;
+    /**
+     * serviceImpl
+     */
+    private JCheckBox serviceImplCheckbox;
+    private PackageChooseTextField serviceImplPackageField;
+    private JTextField serviceImplSuffixField;
+    private PackageChooseTextField controllerPackageField;
+    private JTextField controllerSuffixField;
+    private JTextField controllerUrlPrefixField;
+
+    //------------基本配置-------------
+    private JTextField commonColumnField;
+    private JTextField logicColumnField;
+    private JCheckBox isOpenCheckBox;
+    private JCheckBox dtoCheckbox;
+    private JCheckBox voCheckbox;
+    private JCheckBox queryCheckbox;
+    private JCheckBox formCheckbox;
+    private JCheckBox xmlCheckbox;
+    private JCheckBox controllerCheckbox;
+    private JCheckBox fileOverrideCheckBox;
+    private JCheckBox kotlinCheckBox;
+    private JCheckBox swaggerCheckBox;
+    private JCheckBox kimCheckBox;
+
 
     /**
      * Instantiates a new Config form.
@@ -136,71 +141,24 @@ public class ConfigForm extends JFrame {
     public ConfigForm(String name, AnActionEvent action) throws HeadlessException {
         this.action = action;
         this.project = action.getProject();
+        ZileanContext.getInstance().setConfigForm(this);
+        ZileanContext.getInstance().setProject(this.project);
+
         this.setTitle(name);
-        this.setPreferredSize(new Dimension(1000, 600));
+        this.setPreferredSize(new Dimension(1000, 900));
         this.setContentPane(basePane);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(null);
         this.rootPane.setDefaultButton(okBtn);
         this.setVisible(true);
-        this.dataCacheFile = this.project == null ? null : this.project.getBasePath() + "/.idea/batiso/dataCache.json";
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.tableList.setBorder(JBUI.Borders.empty(5));
 
         // 初始化数据
         this.initData();
-        // 绑定监听器
+        // 绑定事件
         this.bindListeners();
     }
 
-    private void bindListeners() {
-        this.rootPane.registerKeyboardAction(e -> this.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-//        bindCheckboxChange(entityCheckbox, entityPkgField, entitySuffixField, entitySuperClassField);
-//        bindCheckboxChange(daoCheckbox, daoPkgField, daoSuffixField);
-//        bindCheckboxChange(mapperCheckbox, mapperPathField, mapperSuffixField);
-//        bindCheckboxChange(serviceCheckbox, servicePkgField, serviceSuffixField);
-//        bindCheckboxChange(serviceImplCheckbox, serviceImplPkgField, serviceImplSuffixField);
-        this.selectBtn.addActionListener(e -> {
-            if (this.tableList.getSelectedIndices().length < this.tables.size()) {
-                this.tableList.setSelectionInterval(0, this.tables.size() - 1);
-            } else {
-                this.tableList.clearSelection();
-            }
-        });
-
-        FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
-        this.xmlPathField.addBrowseFolderListener("选择目录", "选择Mapper XML文件生成目标文件夹", project, folderChooser);
-
-        this.entityPkgField.setActionListener("选择Entity包", project, this);
-
-        this.entitySuperClassField.setActionListener("选择Entity父类", project, this);
-
-        this.daoPkgField.setActionListener("选择Dao包", project, this);
-
-        this.servicePkgField.setActionListener("选择Service包", project, this, pkg -> {
-            if (this.serviceImplPkgField.getText().isEmpty()) {
-                this.serviceImplPkgField.setText(pkg.concat(".impl"));
-            }
-        });
-
-        this.serviceImplPkgField.setActionListener("选择ServiceImpl包", project, this);
-
-//        this.okBtn.addActionListener(e -> this.generator());
-
-//        this.cancelBtn.addActionListener(e -> this.dispose());
-
-//        this.cacheBtn.addActionListener(e -> this.initDataFromCache());
-    }
-
-    private void bindCheckboxChange(JCheckBox checkBox, Component... components) {
-        if (components != null && components.length > 0) {
-            checkBox.addChangeListener(e -> {
-                boolean selected = ((JCheckBox) e.getSource()).isSelected();
-                Arrays.stream(components).forEach(i -> i.setEnabled(selected));
-            });
-        }
-    }
 
     /**
      * 初始化数据
@@ -213,239 +171,277 @@ public class ConfigForm extends JFrame {
         }
         DbTable table = (DbTable) elements[0];
         // 选择的表列表
-        List<DbTable> selectedTables = Arrays.stream(elements).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).collect(Collectors.toList());
+        java.util.List<DbTable> selectedTables = Arrays.stream(elements).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).collect(Collectors.toList());
         DbElement parent = table.getDasParent();
         // tables表示所有的表
         List<DbTable> tables = parent == null ? selectedTables : parent.getDasChildren(ObjectKind.TABLE).filter(i -> i instanceof DbTable).map(i -> (DbTable) i).toList();
-        this.tables = tables.parallelStream().collect(Collectors.toMap(DasObject::getName, i -> i));
         Vector<String> tableNames = tables.stream().map(DasObject::getName).collect(Collectors.toCollection(Vector::new));
-       // 设置表列表
+        ZileanContext.getInstance().setTableMap(tables.parallelStream().collect(Collectors.toMap(DasObject::getName, i -> i)));
+        ZileanContext.getInstance().setTableList(Collections.list(tableNames.elements()));
+        // 设置表列表
         this.tableList.setListData(tableNames);
         // 选择的表
         this.tableList.setSelectedIndices(selectedTables.stream().mapToInt(i -> tableNames.indexOf(i.getName())).toArray());
 
+        // 重置按钮是否显示
+        if (project != null) {
+            String dataCacheFile = ZileanContext.getInstance().getDataCacheFile();
+            if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
+                this.resetBtn.setEnabled(true);
+            }
+        }
+
+        // 重配置文件中读取
+        this.loadConfigCache();
+    }
+
+
+    /**
+     * 重置配置
+     */
+    private void reset() {
         if (project != null) {
             this.basePathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/java"));
             this.xmlPathField.setText(Objects.requireNonNull(project.getBasePath()).concat("/src/main/resources/mapper"));
-            if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
-                this.cacheBtn.setEnabled(true);
-            }
         }
-        this.commonColumnsField.setText("id,create_time,update_time");
-        this.logicDeleteField.setText(DEFAULT_LOGIC_DELETE_FIELD);
+        this.parentField.setText(null);
+        this.moduleNameField.setText(null);
+        // TODO: 2020/5/18 自动推测表前缀
+        this.tablePrefixField.setText(null);
+        this.authorField.setText(StringUtils.isBlank(System.getProperty("user.name")) ? System.getProperty("user.name") : DEFAULT_AUTHOR);
+        this.controllerUrlPrefixField.setText(DEFAULT_CONTROLLER_URL_PREFIX);
+        this.logicColumnField.setText(DEFAULT_LOGIC_DELETE_FIELD);
+        this.commonColumnField.setText(DEFAULT_COMMON_COLUMN_FIELD);
+
+        this.entitySuffixField.setText(DEFAULT_ENTITY_SUFFIX);
+        this.dtoSuffixField.setText(DEFAULT_DTO_SUFFIX);
+        this.voSuffixField.setText(DEFAULT_VO_SUFFIX);
+        this.querySuffixField.setText(DEFAULT_QUERY_SUFFIX);
+        this.formSuffixField.setText(DEFAULT_FORM_SUFFIX);
+
+        this.daoSuffixField.setText(DEFAULT_DAO_SUFFIX);
+        this.xmlSuffixField.setText(DEFAULT_MAPPER_SUFFIX);
+        this.serviceSuffixField.setText(DEFAULT_SERVICE_SUFFIX);
+        this.serviceImplSuffixField.setText(DEFAULT_SERVICE_IMPL_SUFFIX);
+        this.controllerSuffixField.setText(DEFAULT_CONTROLLER_SUFFIX);
+
+        this.lombokCheckBox.setSelected(true);
+        this.fileOverrideCheckBox.setSelected(true);
+        this.isOpenCheckBox.setSelected(false);
+        this.kotlinCheckBox.setSelected(false);
+        this.swaggerCheckBox.setSelected(false);
+        this.kimCheckBox.setSelected(false);
+
     }
 
-//    private void initDataFromCache() {
-//        GenerateData data = this.readCacheData();
-//        if (data == null) {
-//            return;
-//        }
-//
-//        this.basePathField.setText(data.getBasePath());
-//        this.commonColumnsField.setText(data.getCommonColumn());
-//        this.tablePrefixField.setText(data.getTablePrefix());
-//        this.logicDeleteField.setText(data.getLogicColumn());
-//
-//        this.entityCheckbox.setSelected(data.getTypes().getEntity().isGen());
-//        this.entityPkgField.setText(data.getTypes().getEntity().getPkg());
-//        this.entitySuffixField.setText(data.getTypes().getEntity().getSuffix());
-//        this.entitySuperClassField.setText(data.getEntitySuperClass());
-//
-//        this.daoCheckbox.setSelected(data.getTypes().getDao().isGen());
-//        this.daoPkgField.setText(data.getTypes().getDao().getPkg());
-//        this.daoSuffixField.setText(data.getTypes().getDao().getSuffix());
-//
-//        this.mapperCheckbox.setSelected(data.getTypes().getMapper().isGen());
-//        this.mapperPathField.setText(data.getTypes().getMapper().getPkg());
-//        this.mapperSuffixField.setText(data.getTypes().getMapper().getSuffix());
-//
-//        this.serviceCheckbox.setSelected(data.getTypes().getService().isGen());
-//        this.servicePkgField.setText(data.getTypes().getService().getPkg());
-//        this.serviceSuffixField.setText(data.getTypes().getService().getSuffix());
-//
-//        this.serviceImplCheckbox.setSelected(data.getTypes().getServiceImpl().isGen());
-//        this.serviceImplPkgField.setText(data.getTypes().getServiceImpl().getPkg());
-//        this.serviceImplSuffixField.setText(data.getTypes().getServiceImpl().getSuffix());
-//
-//        this.columnConstCheckbox.setSelected(data.isColumnConst());
-//        this.lombokCheckBox.setSelected(data.isLombok());
-//        this.tinyintCheckbox.setSelected(data.isTinyint2boolean());
-//        this.swaggerCheckbox.setSelected(data.isSwagger());
-//    }
-//
-//    private GenerateData.Class buildClass(GenerateData g, GenerateData.Type type, String singleName, String beanName) {
-//        GenerateData.Class clz = new GenerateData.Class();
-//        clz.setPkg(type.getPkg());
-//        clz.setName(singleName + type.getSuffix());
-//        clz.setBeanName(beanName + type.getSuffix());
-//        clz.setClassName(clz.getPkg() + "." + clz.getName());
-//        clz.setFilePath(g.getBasePath() + "/" + clz.getPkg().replaceAll("\\.", "/"));
-//        clz.setFileName(clz.getFilePath() + "/" + clz.getName() + ".java");
-//        return clz;
-//    }
-//
-//    private GenerateData.TableInfo buildTableData(GenerateData g, DbTable table) {
-//        GenerateData.TableInfo data = new GenerateData.TableInfo();
-//        data.setName(table.getName());
-//        data.setComment(table.getComment());
-//
-//        final List<String> imports = new ArrayList<>();
-//
-//        List<? extends DasColumn> columns = DasUtil.getColumns(table).toList();
-//        List<GenerateData.Column> list = columns.parallelStream().map(c -> {
-//            GenerateData.Column cd = new GenerateData.Column();
-//            cd.setName(c.getName());
-//            cd.setFieldName(BatisoUtils.underLineToHump(c.getName()));
-//            cd.setDataType(c.getDataType());
-//            ColumnDataType type = ColumnDataType.nameOf(c.getDataType().typeName.split(" ")[0]);
-//            cd.setJdbcType(type.jdbcType);
-//            if (type == ColumnDataType.TINYINT && c.getDataType().size == 1 && g.isTinyint2boolean()) {
-//                cd.setJavaType(ColumnDataType.BOOLEAN.javaType);
-//            } else {
-//                cd.setJavaType(type.javaType);
-//            }
-//            cd.setComment(c.getComment());
-//            cd.setNotNull(c.isNotNull());
-//            cd.setPrimaryKey(DasUtil.isPrimary(c));
-//            cd.setAutoGenerate(DasUtil.isAutoGenerated(c));
-//            cd.setInCommon(g.isCommonColumn(c.getName()));
-//            cd.setTableLogic(g.isLogicColumn(c.getName()));
-//            cd.setMysqlKeyword(BatisoUtils.MYSQL_KEYWORDS.contains(c.getName().toUpperCase()));
-//            if (cd.getJavaType().contains(".")) {
-//                imports.add(cd.getJavaType());
-//                cd.setSimpleJavaType(cd.getJavaType().substring(cd.getJavaType().lastIndexOf('.') + 1));
-//            } else {
-//                cd.setSimpleJavaType(cd.getJavaType());
-//            }
-//            return cd;
-//        }).collect(Collectors.toList());
-//        data.setColumns(list);
-//
-//        String noPrefixName = g.getTablePrefix().isEmpty() ? table.getName() : table.getName().replaceFirst("^" + g.getTablePrefix(), "");
-//        String singleName = BatisoUtils.toHumpAndUpperCaseFirstLetter(noPrefixName);
-//        String beanName = BatisoUtils.underLineToHump(noPrefixName);
-//
-//        data.setEntity(this.buildClass(g, g.getTypes().getEntity(), singleName, beanName));
-//        data.getEntity().setImports(imports.stream().distinct().sorted().collect(Collectors.toList()));
-//        data.setDao(this.buildClass(g, g.getTypes().getDao(), singleName, beanName));
-//        data.setService(this.buildClass(g, g.getTypes().getService(), singleName, beanName));
-//        data.setServiceImpl(this.buildClass(g, g.getTypes().getServiceImpl(), singleName, beanName));
-//        data.setMapperPath(g.getTypes().getMapper().getPkg() + "/" + data.getEntity().getName() + g.getTypes().getMapper().getSuffix() + ".xml");
-//
-//        return data;
-//    }
-//
-//    private GenerateData buildGenerateData() {
-//        GenerateData data = new GenerateData();
-//        data.setBasePath(this.basePathField.getText());
-//        data.setTablePrefix(this.tablePrefixField.getText());
-//        data.setCommonColumn(this.commonColumnsField.getText());
-//        data.setLogicColumn(this.logicDeleteField.getText());
-//        data.setEntitySuperClass(this.entitySuperClassField.getText());
-//        data.setColumnConst(this.columnConstCheckbox.isSelected());
-//        data.setLombok(this.lombokCheckBox.isSelected());
-//        data.setTinyint2boolean(this.tinyintCheckbox.isSelected());
-//        data.setSwagger(this.swaggerCheckbox.isSelected());
-//
-//        GenerateData.Types types = new GenerateData.Types();
-//        types.setEntity(new GenerateData.Type(this.entityPkgField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
-//        types.setDao(new GenerateData.Type(this.daoPkgField.getText(), this.daoSuffixField.getText(), this.daoCheckbox.isSelected()));
-//        types.setMapper(new GenerateData.Type(this.mapperPathField.getText(), this.mapperSuffixField.getText(), this.mapperCheckbox.isSelected()));
-//        types.setService(new GenerateData.Type(this.servicePkgField.getText(), this.serviceSuffixField.getText(), this.serviceCheckbox.isSelected()));
-//        types.setServiceImpl(new GenerateData.Type(this.serviceImplPkgField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
-//        data.setTypes(types);
-//
-//        data.setTables(this.tableList.getSelectedValuesList().parallelStream().map(i -> buildTableData(data, tables.get(i))).collect(Collectors.toList()));
-//        return data;
-//    }
-//
-//    private GenerateData readCacheData() {
-//        try {
-//            if (dataCacheFile != null) {
-//                File cacheFile = new File(dataCacheFile);
-//                FileUtils.forceMkdirParent(cacheFile);
-//                if (cacheFile.isFile()) {
-//                    String cache = FileUtils.readFileToString(cacheFile, StandardCharsets.UTF_8);
-//                    return this.objectMapper.readValue(cache, GenerateData.class);
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    private void cacheGeneratorData(GenerateData data) {
-//        try {
-//            if (dataCacheFile != null) {
-//                String cache = this.objectMapper.writeValueAsString(data);
-//                FileUtils.writeStringToFile(new File(dataCacheFile), cache, StandardCharsets.UTF_8);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void generator() {
-//        if (this.tableList.getSelectedIndices().length == 0) {
-//            Messages.showMessageDialog(project, "请至少选择一个表", "提示", Messages.getInformationIcon());
-//            return;
-//        }
-//        GenerateData data = this.buildGenerateData();
-//        this.cacheGeneratorData(data);
-//        Configuration gt = new Configuration(Configuration.getVersion());
-//        boolean hasCustomTemp = false;
-//        if (project != null) {
-//            File tempDir = new File(project.getBasePath() + "/.batiso/templates");
-//            try {
-//                if (tempDir.isDirectory() && tempDir.canRead()) {
-//                    gt.setDirectoryForTemplateLoading(tempDir);
-//                    hasCustomTemp = true;
-//                } else {
-//                    tempDir = new File(project.getBasePath() + "/.idea/batiso/templates");
-//                    if (tempDir.isDirectory() && tempDir.canRead()) {
-//                        gt.setDirectoryForTemplateLoading(tempDir);
-//                        hasCustomTemp = true;
-//                    }
-//                }
-//            } catch (IOException ignored) {
-//            }
-//        }
-//        if (!hasCustomTemp) {
-//            gt.setClassLoaderForTemplateLoading(ConfigForm.class.getClassLoader(), "templates");
-//        }
-//        gt.setDefaultEncoding("utf-8");
-//        data.getTables().forEach(t -> {
-//            doGenTemp(t, data.getTypes().getEntity(), gt, "/entity.ftl", t.getEntity().getFileName(), data);
-//            doGenTemp(t, data.getTypes().getDao(), gt, "/dao.ftl", t.getDao().getFileName(), data);
-//            doGenTemp(t, data.getTypes().getService(), gt, "/service.ftl", t.getService().getFileName(), data);
-//            doGenTemp(t, data.getTypes().getServiceImpl(), gt, "/service-impl.ftl", t.getServiceImpl().getFileName(), data);
-//            doGenTemp(t, data.getTypes().getMapper(), gt, "/xml.ftl", t.getMapperPath(), data);
-//        });
-//        Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
-//        this.dispose();
-//    }
-//
-//    private void doGenTemp(GenerateData.TableInfo table, GenerateData.Type type, Configuration gt, String tpl, String distFile, GenerateData data) {
-//        if (type.isGen()) {
-//            try {
-//                Map<String, Object> dataModel = new HashMap<>(4);
-//                dataModel.put("data", data);
-//                dataModel.put("table", table);
-//                dataModel.put("type", type);
-//                dataModel.put("date", new Date());
-//                Template template = gt.getTemplate(tpl, StandardCharsets.UTF_8.name());
-//                FileUtils.forceMkdirParent(new File(distFile));
-//                OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(distFile), StandardCharsets.UTF_8);
-//                template.process(dataModel, osw);
-//                osw.close();
-//            } catch (IOException | TemplateException e) {
-//                Messages.showMessageDialog(String.format("%s >>> 生成文件【%s】失败: %s", table.getName(), distFile, e.getMessage()), "提示", Messages.getErrorIcon());
-//            }
-//        }
-//    }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
+    /**
+     * 绑定事件
+     */
+    private void bindListeners() {
+        FileChooserDescriptor folderChooser = new FileChooserDescriptor(false, true, false, false, false, false);
+        // 选择根路径
+        this.basePathField.addActionListener(e -> {
+            FileChooser.chooseFile(folderChooser, project, this, null, x -> {
+                String basePath = x.getPath();
+                this.basePathField.setText(basePath.concat("/src/main/java"));
+                String baseXmlPath = basePath + "/src/main/resources/mapper";
+                if (StringUtils.isNotBlank(this.moduleNameField.getText())) {
+                    baseXmlPath = baseXmlPath + File.separator + this.moduleNameField.getText();
+                }
+                this.xmlPathField.setText(baseXmlPath);
+//                this.setAlwaysOnTop(true);
+            });
+        });
+
+        this.xmlPathField.addActionListener(e -> {
+            FileChooser.chooseFile(folderChooser, project, this, null, x -> {
+                this.xmlPathField.setText(x.getPath());
+//                this.setAlwaysOnTop(true);
+            });
+        });
+
+
+        // 包路径
+        this.parentField.setActionListener("选择包路径", project, this, x -> {
+            this.updatePackagePath();
+        });
+
+        this.moduleNameField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                ZileanContext.getInstance().getConfigForm().updatePackagePath();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                ZileanContext.getInstance().getConfigForm().updatePackagePath();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                System.out.println("changedUpdate");
+            }
+        });
+
+
+        this.entityPackageField.setActionListener("选择Entity包", project, this);
+        this.dtoPackageField.setActionListener("选择DTO包", project, this);
+        this.voPackageField.setActionListener("选择VO包", project, this);
+        this.queryPackageField.setActionListener("选择Query包", project, this);
+        this.formPackageField.setActionListener("选择Form包", project, this);
+
+        this.daoPackageField.setActionListener("选择Dao包", project, this);
+        this.servicePackageField.setActionListener("选择Service包", project, this);
+        this.serviceImplPackageField.setActionListener("选择ServiceImpl包", project, this);
+        this.controllerPackageField.setActionListener("选择Controller包", project, this);
+
+
+        // ok按钮
+        this.okBtn.addActionListener(e -> this.generateCode());
+        // 销毁窗口
+        this.cancelBtn.addActionListener(e -> this.dispose());
+        // 重置表单
+        this.resetBtn.addActionListener(e -> this.reset());
     }
+
+    /**
+     * 更新包路径
+     */
+    private void updatePackagePath() {
+        String parent = this.parentField.getText();
+        String moduleName = this.moduleNameField.getText();
+        String basePackage = parent;
+        String baseXmlPath = this.xmlPathField.getText();
+        if (StringUtils.isNotBlank(moduleName)) {
+            basePackage = ZileanUtils.joinPackage(parent, moduleName + DOT);
+            baseXmlPath = baseXmlPath + File.separator + moduleName;
+        }
+        this.entityPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.entity"));
+        this.dtoPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.dto"));
+        this.voPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.vo"));
+        this.queryPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.query"));
+        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.form"));
+
+        this.daoPackageField.setText(ZileanUtils.joinPackage(basePackage, "dao"));
+        this.servicePackageField.setText(ZileanUtils.joinPackage(basePackage, "service"));
+        this.serviceImplPackageField.setText(ZileanUtils.joinPackage(basePackage, "service.impl"));
+        this.controllerPackageField.setText(ZileanUtils.joinPackage(basePackage, "controller"));
+        this.xmlPathField.setText(baseXmlPath);
+    }
+
+
+    /**
+     * 从页面配置构建新建配置参数
+     *
+     * @return
+     */
+    private Config buildConfig() {
+        Config config = new Config();
+        config.setBasePath(this.basePathField.getText());
+        config.setTablePrefix(this.tablePrefixField.getText());
+        config.setParent(this.parentField.getText());
+        config.setLogicColumn(this.logicColumnField.getText());
+        config.setCommonColumn(this.commonColumnField.getText());
+        config.setModuleName(this.moduleNameField.getText());
+        config.setAuthor(this.authorField.getText());
+        config.setControllerUrlPrefix(this.controllerUrlPrefixField.getText());
+
+        PackageConfigs packageConfigs = new PackageConfigs();
+        packageConfigs.setEntity(new PackageConfig(this.entityPackageField.getText(), this.entitySuffixField.getText(), this.entityCheckbox.isSelected()));
+        packageConfigs.setDto(new PackageConfig(this.dtoPackageField.getText(), this.dtoSuffixField.getText(), this.dtoCheckbox.isSelected()));
+        packageConfigs.setVo(new PackageConfig(this.voPackageField.getText(), this.voSuffixField.getText(), this.voCheckbox.isSelected()));
+        packageConfigs.setForm(new PackageConfig(this.formPackageField.getText(), this.formSuffixField.getText(), this.formCheckbox.isSelected()));
+        packageConfigs.setQuery(new PackageConfig(this.queryPackageField.getText(), this.querySuffixField.getText(), this.queryCheckbox.isSelected()));
+        packageConfigs.setDao(new PackageConfig(this.daoPackageField.getText(), this.daoSuffixField.getText(), this.daoCheckbox.isSelected()));
+        packageConfigs.setXml(new PackageConfig(this.xmlPathField.getText(), this.xmlSuffixField.getText(), this.xmlCheckbox.isSelected()));
+        packageConfigs.setService(new PackageConfig(this.servicePackageField.getText(), this.serviceSuffixField.getText(), this.serviceCheckbox.isSelected()));
+        packageConfigs.setServiceImpl(new PackageConfig(this.serviceImplPackageField.getText(), this.serviceImplSuffixField.getText(), this.serviceImplCheckbox.isSelected()));
+        packageConfigs.setController(new PackageConfig(this.controllerPackageField.getText(), this.controllerSuffixField.getText(), this.controllerCheckbox.isSelected()));
+        config.setPackageConfigs(packageConfigs);
+
+        config.setLombok(this.fileOverrideCheckBox.isSelected());
+        config.setOpen(this.isOpenCheckBox.isSelected());
+        config.setFileOverride(this.fileOverrideCheckBox.isSelected());
+        config.setKim(this.kimCheckBox.isSelected());
+        config.setKotlin(this.kotlinCheckBox.isSelected());
+        config.setSwagger(this.swaggerCheckBox.isSelected());
+
+
+        ZileanContext.getInstance().setSelectedTableList(tableList.getSelectedValuesList());
+        config.setTables(KimPlusGeneratorHelper.getInstance().getTableInfoList(config));
+        return config;
+    }
+
+
+    /**
+     * 生成代码
+     */
+    private void generateCode() {
+        if (this.tableList.getSelectedIndices().length == 0) {
+            Messages.showMessageDialog(project, "请至少选择一个表", "提示", Messages.getInformationIcon());
+            return;
+        }
+
+        if (StringUtils.isBlank(this.parentField.getText())) {
+            Messages.showMessageDialog(project, "包路径必填", "提示", Messages.getInformationIcon());
+            return;
+        }
+
+        Config config = this.buildConfig();
+        KimPlusGeneratorHelper.getInstance().cacheGeneratorData(config);
+        KimPlusGeneratorHelper.getInstance().generate(config);
+        Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
+        this.dispose();
+    }
+
+    private void loadConfigCache() {
+        Config config = KimPlusGeneratorHelper.getInstance().readCacheData();
+        if (config == null) {
+            this.reset();
+            return;
+        }
+        PackageConfigs packageConfigs = config.getPackageConfigs();
+        this.basePathField.setText(config.getBasePath());
+        this.parentField.setText(config.getParent());
+        this.moduleNameField.setText(config.getModuleName());
+        this.tablePrefixField.setText(config.getTablePrefix());
+        this.authorField.setText(config.getAuthor());
+        this.controllerUrlPrefixField.setText(config.getControllerUrlPrefix());
+        this.logicColumnField.setText(config.getLogicColumn());
+        this.commonColumnField.setText(config.getLogicColumn());
+
+        this.entityPackageField.setText(packageConfigs.getEntity().getPkg());
+        this.dtoPackageField.setText(packageConfigs.getDto().getPkg());
+        this.voPackageField.setText(packageConfigs.getVo().getPkg());
+        this.formPackageField.setText(packageConfigs.getForm().getPkg());
+        this.queryPackageField.setText(packageConfigs.getQuery().getPkg());
+
+        this.daoPackageField.setText(packageConfigs.getDao().getPkg());
+        this.xmlPathField.setText(packageConfigs.getXml().getPkg());
+        this.serviceImplPackageField.setText(packageConfigs.getServiceImpl().getPkg());
+        this.servicePackageField.setText(packageConfigs.getService().getPkg());
+        this.controllerPackageField.setText(packageConfigs.getController().getPkg());
+
+        this.entityCheckbox.setSelected(packageConfigs.getEntity().isNeed());
+        this.dtoCheckbox.setSelected(packageConfigs.getDto().isNeed());
+        this.voCheckbox.setSelected(packageConfigs.getVo().isNeed());
+        this.queryCheckbox.setSelected(packageConfigs.getQuery().isNeed());
+        this.formCheckbox.setSelected(packageConfigs.getForm().isNeed());
+
+
+        this.daoCheckbox.setSelected(packageConfigs.getDao().isNeed());
+        this.xmlCheckbox.setSelected(packageConfigs.getXml().isNeed());
+        this.serviceCheckbox.setSelected(packageConfigs.getService().isNeed());
+        this.serviceImplCheckbox.setSelected(packageConfigs.getServiceImpl().isNeed());
+        this.controllerCheckbox.setSelected(packageConfigs.getController().isNeed());
+
+        this.lombokCheckBox.setSelected(config.isLombok());
+        this.kotlinCheckBox.setSelected(config.isKotlin());
+        this.swaggerCheckBox.setSelected(config.isSwagger());
+        this.fileOverrideCheckBox.setSelected(config.isFileOverride());
+        this.isOpenCheckBox.setSelected(config.isOpen());
+        this.kimCheckBox.setSelected(config.isKim());
+    }
+
 }
