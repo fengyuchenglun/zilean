@@ -491,8 +491,4 @@ public class ConfigForm extends JFrame {
         this.kimCheckBox.setSelected(config.isKim());
     }
 
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
 }
