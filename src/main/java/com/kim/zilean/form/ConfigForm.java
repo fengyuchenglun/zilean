@@ -129,6 +129,7 @@ public class ConfigForm extends JFrame {
     private JCheckBox kotlinCheckBox;
     private JCheckBox swaggerCheckBox;
     private JCheckBox kimCheckBox;
+    private JButton previousConfigButton;
 
 
     /**
@@ -188,6 +189,7 @@ public class ConfigForm extends JFrame {
             String dataCacheFile = ZileanContext.getInstance().getDataCacheFile();
             if (dataCacheFile != null && new File(dataCacheFile).isFile()) {
                 this.resetBtn.setEnabled(true);
+                this.previousConfigButton.setEnabled(true);
             }
         }
 
@@ -213,11 +215,23 @@ public class ConfigForm extends JFrame {
         this.logicColumnField.setText(DEFAULT_LOGIC_DELETE_FIELD);
         this.commonColumnField.setText(DEFAULT_COMMON_COLUMN_FIELD);
 
+        this.entityPackageField.setText(null);
+        this.dtoPackageField.setText(null);
+        this.voPackageField.setText(null);
+        this.formPackageField.setText(null);
+        this.queryPackageField.setText(null);
+
         this.entitySuffixField.setText(DEFAULT_ENTITY_SUFFIX);
         this.dtoSuffixField.setText(DEFAULT_DTO_SUFFIX);
         this.voSuffixField.setText(DEFAULT_VO_SUFFIX);
         this.querySuffixField.setText(DEFAULT_QUERY_SUFFIX);
         this.formSuffixField.setText(DEFAULT_FORM_SUFFIX);
+
+        this.daoPackageField.setText(null);
+        this.xmlPathField.setText(null);
+        this.serviceImplPackageField.setText(null);
+        this.servicePackageField.setText(null);
+        this.controllerPackageField.setText(null);
 
         this.daoSuffixField.setText(DEFAULT_DAO_SUFFIX);
         this.xmlSuffixField.setText(DEFAULT_MAPPER_SUFFIX);
@@ -250,7 +264,6 @@ public class ConfigForm extends JFrame {
                     baseXmlPath = baseXmlPath + File.separator + this.moduleNameField.getText();
                 }
                 this.xmlPathField.setText(baseXmlPath);
-//                this.setAlwaysOnTop(true);
             });
         });
 
@@ -260,6 +273,19 @@ public class ConfigForm extends JFrame {
 //                this.setAlwaysOnTop(true);
             });
         });
+
+        this.selectBtn.addActionListener(e -> {
+            List<String> tableList = ZileanContext.getInstance().getTableList();
+            if (this.tableList.getSelectedIndices().length < tableList.size()) {
+                this.tableList.setSelectionInterval(0, tableList.size() - 1);
+            } else {
+                this.tableList.clearSelection();
+            }
+        });
+
+        //this.tableList.addListSelectionListener(x -> {
+        //    System.out.println(x);
+        //});
 
 
         // 包路径
@@ -303,7 +329,16 @@ public class ConfigForm extends JFrame {
         this.cancelBtn.addActionListener(e -> this.dispose());
         // 重置表单
         this.resetBtn.addActionListener(e -> this.reset());
+        // 加载上次配置
+        this.previousConfigButton.addActionListener(e -> this.loadConfigCache());
     }
+
+    //private void buildTablePrefix() {
+    //    List<String> selectTableList = this.tableList.getSelectedValuesList();
+    //    if (CollectionUtils.isNotEmpty(selectTableList)) {
+    //        this.tablePrefixField.setText(StringUtils.join(Sets.newHashSet(selectTableList.stream().map(x-> {return StringUtils.lastIndexOf()})), ","));
+    //    }
+    //}
 
     /**
      * 更新包路径
@@ -321,7 +356,7 @@ public class ConfigForm extends JFrame {
         this.dtoPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.dto"));
         this.voPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.vo"));
         this.queryPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.query"));
-        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.form"));
+        this.formPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.model.query"));
 
         this.daoPackageField.setText(ZileanUtils.joinPackage(basePackage, "dao"));
         this.servicePackageField.setText(ZileanUtils.joinPackage(basePackage, "service"));
@@ -379,19 +414,19 @@ public class ConfigForm extends JFrame {
      */
     private void generateCode() {
         if (this.tableList.getSelectedIndices().length == 0) {
-            Messages.showMessageDialog(project, "请至少选择一个表", "提示", Messages.getInformationIcon());
+            Messages.showMessageDialog(this, "请至少选择一个表", "提示", Messages.getInformationIcon());
             return;
         }
 
         if (StringUtils.isBlank(this.parentField.getText())) {
-            Messages.showMessageDialog(project, "包路径必填", "提示", Messages.getInformationIcon());
+            Messages.showMessageDialog(this, "包路径必填", "提示", Messages.getInformationIcon());
             return;
         }
 
         Config config = this.buildConfig();
         KimPlusGeneratorHelper.getInstance().cacheGeneratorData(config);
         KimPlusGeneratorHelper.getInstance().generate(config);
-        Messages.showMessageDialog(project, "代码生成完毕！", "提示", Messages.getInformationIcon());
+        Messages.showMessageDialog(this, "代码生成完毕！", "提示", Messages.getInformationIcon());
         this.dispose();
     }
 
@@ -417,11 +452,23 @@ public class ConfigForm extends JFrame {
         this.formPackageField.setText(packageConfigs.getForm().getPkg());
         this.queryPackageField.setText(packageConfigs.getQuery().getPkg());
 
+        this.entitySuffixField.setText(packageConfigs.getEntity().getSuffix());
+        this.dtoSuffixField.setText(packageConfigs.getDto().getSuffix());
+        this.voSuffixField.setText(packageConfigs.getVo().getSuffix());
+        this.formSuffixField.setText(packageConfigs.getForm().getSuffix());
+        this.querySuffixField.setText(packageConfigs.getQuery().getSuffix());
+
         this.daoPackageField.setText(packageConfigs.getDao().getPkg());
         this.xmlPathField.setText(packageConfigs.getXml().getPkg());
         this.serviceImplPackageField.setText(packageConfigs.getServiceImpl().getPkg());
         this.servicePackageField.setText(packageConfigs.getService().getPkg());
         this.controllerPackageField.setText(packageConfigs.getController().getPkg());
+
+        this.daoSuffixField.setText(packageConfigs.getDao().getSuffix());
+        this.xmlSuffixField.setText(packageConfigs.getXml().getSuffix());
+        this.serviceImplSuffixField.setText(packageConfigs.getServiceImpl().getSuffix());
+        this.serviceSuffixField.setText(packageConfigs.getService().getSuffix());
+        this.controllerSuffixField.setText(packageConfigs.getController().getSuffix());
 
         this.entityCheckbox.setSelected(packageConfigs.getEntity().isNeed());
         this.dtoCheckbox.setSelected(packageConfigs.getDto().isNeed());
@@ -443,5 +490,6 @@ public class ConfigForm extends JFrame {
         this.isOpenCheckBox.setSelected(config.isOpen());
         this.kimCheckBox.setSelected(config.isKim());
     }
+
 
 }
