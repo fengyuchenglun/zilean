@@ -1,6 +1,7 @@
 package com.kim.zilean.form.component;
 
 import com.intellij.ide.util.TreeJavaClassChooserDialog;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Experiments;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
@@ -22,7 +23,11 @@ public class ClassChooseTextField extends ComponentWithBrowseButton<JTextField> 
     private ActionListener actionListener;
 
     public ClassChooseTextField() {
-        super(Experiments.getInstance().isFeatureEnabled("inline.browse.button") ? new ExtendableTextField(10) : new JBTextField(10), null);
+        super(getExperiments().isFeatureEnabled("inline.browse.button") ? new ExtendableTextField(10) : new JBTextField(10), null);
+    }
+
+    private static Experiments getExperiments() {
+        return ((Experiments) ApplicationManager.getApplication().getPicoContainer().getComponentInstance(Experiments.class.getName()));
     }
 
     @NotNull

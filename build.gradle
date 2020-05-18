@@ -30,15 +30,16 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version 'IU-LATEST-EAP-SNAPSHOT'
+    updateSinceUntilBuild false
+    version ideaVersion
     setPlugins('java', 'DatabaseTools')
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "1.6"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "1.6"
 }
 
 patchPluginXml {

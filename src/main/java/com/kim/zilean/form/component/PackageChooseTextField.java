@@ -1,6 +1,7 @@
 package com.kim.zilean.form.component;
 
 import com.intellij.ide.util.PackageChooserDialog;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.Experiments;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
@@ -28,7 +29,11 @@ public class PackageChooseTextField extends ComponentWithBrowseButton<JTextField
      * Instantiates a new Package choose text field.
      */
     public PackageChooseTextField() {
-        super(Experiments.getInstance().isFeatureEnabled("inline.browse.button") ? new ExtendableTextField(10) : new JBTextField(10), null);
+        super(getExperiments().isFeatureEnabled("inline.browse.button") ? new ExtendableTextField(10) : new JBTextField(10), null);
+    }
+
+    private static Experiments getExperiments(){
+        return ((Experiments) ApplicationManager.getApplication().getPicoContainer().getComponentInstance(Experiments.class.getName()));
     }
 
     /**
