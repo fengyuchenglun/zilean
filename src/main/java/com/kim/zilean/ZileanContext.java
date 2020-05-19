@@ -24,6 +24,10 @@ public class ZileanContext {
      */
     private ConfigForm configForm;
 
+    /**
+     * xml路径
+     */
+    private String baseXmlPath;
     private AnActionEvent action;
     /**
      * 所有的表结构
@@ -154,6 +158,14 @@ public class ZileanContext {
      */
     public void setSelectedTableList(List<String> selectedTableList) {
         this.selectedTableList = selectedTableList;
+    }
+
+    public String getBaseXmlPath() {
+        return baseXmlPath;
+    }
+
+    public void setBaseXmlPath(String baseXmlPath) {
+        this.baseXmlPath = baseXmlPath;
     }
 
 

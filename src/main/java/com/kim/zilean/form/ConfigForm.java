@@ -20,6 +20,7 @@ import com.kim.zilean.model.Config;
 import com.kim.zilean.model.PackageConfig;
 import com.kim.zilean.model.PackageConfigs;
 import com.kim.zilean.util.ZileanUtils;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -146,12 +147,13 @@ public class ConfigForm extends JFrame {
         ZileanContext.getInstance().setProject(this.project);
 
         this.setTitle(name);
-        this.setPreferredSize(new Dimension(1000, 900));
+        this.setPreferredSize(new Dimension(1000, 850));
         this.setContentPane(basePane);
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(null);
         this.rootPane.setDefaultButton(okBtn);
+        this.setModalExclusionType(Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
         this.setVisible(true);
 
         // 初始化数据
@@ -160,7 +162,7 @@ public class ConfigForm extends JFrame {
         this.bindListeners();
     }
 
-    private void initUI(){
+    private void initUI() {
 
     }
 
@@ -261,18 +263,20 @@ public class ConfigForm extends JFrame {
         this.basePathField.addActionListener(e -> {
             FileChooser.chooseFile(folderChooser, project, this, null, x -> {
                 String basePath = x.getPath();
-                this.basePathField.setText(basePath.concat("/src/main/java"));
-                String baseXmlPath = basePath + "/src/main/resources/mapper";
+                this.basePathField.setText(basePath.concat(DEFAULT_SOURCE_PATH));
+                String baseXmlPath = basePath + DEFAULT_MAPPER_PATH;
                 if (StringUtils.isNotBlank(this.moduleNameField.getText())) {
                     baseXmlPath = baseXmlPath + File.separator + this.moduleNameField.getText();
                 }
                 this.xmlPathField.setText(baseXmlPath);
+                ZileanContext.getInstance().setBaseXmlPath(baseXmlPath);
             });
         });
 
         this.xmlPathField.addActionListener(e -> {
             FileChooser.chooseFile(folderChooser, project, this, null, x -> {
                 this.xmlPathField.setText(x.getPath());
+                ZileanContext.getInstance().setBaseXmlPath(x.getPath());
 //                this.setAlwaysOnTop(true);
             });
         });
@@ -296,13 +300,17 @@ public class ConfigForm extends JFrame {
         });
 
         this.moduleNameField.getDocument().addDocumentListener(new DocumentListener() {
+            @SneakyThrows
             @Override
             public void insertUpdate(DocumentEvent e) {
+                Thread.sleep(500);
                 ZileanContext.getInstance().getConfigForm().updatePackagePath();
             }
 
+            @SneakyThrows
             @Override
             public void removeUpdate(DocumentEvent e) {
+                Thread.sleep(500);
                 ZileanContext.getInstance().getConfigForm().updatePackagePath();
             }
 
@@ -349,9 +357,9 @@ public class ConfigForm extends JFrame {
         String parent = this.parentField.getText();
         String moduleName = this.moduleNameField.getText();
         String basePackage = parent;
-        String baseXmlPath = this.xmlPathField.getText();
+        String baseXmlPath = ZileanContext.getInstance().getBaseXmlPath();
         if (StringUtils.isNotBlank(moduleName)) {
-            basePackage = ZileanUtils.joinPackage(parent, moduleName + DOT);
+            basePackage = ZileanUtils.joinPackage(parent, moduleName);
             baseXmlPath = baseXmlPath + File.separator + moduleName;
         }
         this.entityPackageField.setText(ZileanUtils.joinPackage(basePackage, "domain.entity"));
@@ -491,6 +499,8 @@ public class ConfigForm extends JFrame {
         this.fileOverrideCheckBox.setSelected(config.isFileOverride());
         this.isOpenCheckBox.setSelected(config.isOpen());
         this.kimCheckBox.setSelected(config.isKim());
+
+        ZileanContext.getInstance().setBaseXmlPath(this.basePathField.getText());
     }
 
     private void createUIComponents() {

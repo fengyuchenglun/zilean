@@ -35,5 +35,18 @@
                 description="Generate myBatis plus common code">
             <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
         </action>
+        <group id="zileanMenu" text="Zilean" popup="true">
+            <action id="batiso.ExportTemplates" class="com.kim.zilean.action.ZileanExportTemplatesAction"
+                    text="导出默认模版到 .zilean"
+                    description="将默认的模版导出到项目根目录 (.zilean/templates) 中">
+            </action>
+            <action id="batiso.ExportTemplatesToIdea"
+                    class="com.kim.zilean.action.ZileanExportTemplatesToProjectConfigAction"
+                    text="导出默认模版到 .idea/zilean"
+                    description="将默认的模版导出到项目配置目录 (.idea/zilean/templates) 中">
+            </action>
+            <separator/>
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </group>
     </actions>
 </idea-plugin>

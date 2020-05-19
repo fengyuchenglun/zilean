@@ -1,3 +1,5 @@
+<#assign swagger = config.swagger>
+<#assign propsName = table.propsName>
 package ${table.query.pkg};
 
 import java.io.Serializable;
@@ -12,6 +14,11 @@ import ${imp};
 <#if config.kim>
 import com.kim.boot.web.converter.result.domain.PageSortQuery;
 </#if>
+<#if swagger>
+    import io.swagger.annotations.ApiModel;
+    import io.swagger.annotations.ApiModelProperty;
+</#if>
+
 /**
  * ${table.comment!table.query.name}
  *
@@ -23,15 +30,22 @@ import com.kim.boot.web.converter.result.domain.PageSortQuery;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 </#if>
+<#if swagger>
+@ApiModel(value="${propsName} object", description="${table.comment!}")
+</#if>
 public class ${table.query.name} <#if config.kim>extends PageSortQuery </#if>implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     <#list table.columns as column>
     <#if !column.inCommon && !column.tableLogic>
+     <#if swagger>
+    @ApiModelProperty(value = "${column.comment!column.name}")
+     <#else>
     /**
      * ${column.comment!column.name}
      */
+     </#if>
     private ${column.simpleJavaType} ${column.fieldName};
     </#if>
     </#list>

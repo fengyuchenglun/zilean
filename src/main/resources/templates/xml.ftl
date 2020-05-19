@@ -14,7 +14,7 @@
     </resultMap>
 
     <!-- 通用查询结果列 -->
-    <sql id="BaseColumnList">
+    <sql id="Base_Column_List">
         <#list table.columns as column>
         `${column.name}`<#if column_has_next>,</#if>
         </#list>
@@ -43,17 +43,17 @@
         ${table.name}
         <where>
             <#-- ----------  BEGIN 字段循环遍历  ---------->
-            <#list table.columns as column>
-                <#if column.simpleJavaType == "String">
-                    <if test=" query.${column.fieldName} != null and query.${column.fieldName}!=''">
-                        and ${column.name} = ${r'#'}{query.${column.fieldName}}
-                    </if>
-                <#else>
-                    <if test=" query.${column.fieldName} != null ">
-                        and ${column.name} = ${r'#'}{query.${column.fieldName}}
-                    </if>
-                </#if>
-            </#list>
+        <#list table.columns as column>
+        <#if column.simpleJavaType == "String">
+            <if test=" query.${column.fieldName} != null and query.${column.fieldName}!=''">
+                and ${column.name} = ${r'#'}{query.${column.fieldName}}
+            </if>
+        <#else>
+            <if test=" query.${column.fieldName} != null ">
+                and ${column.name} = ${r'#'}{query.${column.fieldName}}
+            </if>
+        </#if>
+        </#list>
             <#-- ----------  END 字段循环遍历  ---------->
         </where>
         <choose>

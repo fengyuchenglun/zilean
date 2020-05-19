@@ -1,3 +1,5 @@
+<#assign swagger = config.swagger>
+<#assign propsName = table.propsName>
 package ${table.form.pkg};
 
 import java.io.Serializable;
@@ -9,9 +11,10 @@ import lombok.experimental.Accessors;
 <#list table.form.imports as imp>
 import ${imp};
 </#list>
-<#--<#if data.entitySuperClass??>-->
-<#--import ${data.entitySuperClass};-->
-<#--</#if>-->
+<#if swagger>
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+</#if>
 
 /**
  * ${table.comment!table.form.name}
@@ -23,6 +26,9 @@ import ${imp};
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
+</#if>
+<#if swagger>
+@ApiModel(value="${propsName} object", description="${table.comment!}")
 </#if>
 public class ${table.form.name} implements Serializable {
 
@@ -36,9 +42,13 @@ public class ${table.form.name} implements Serializable {
 <#--    </#if>-->
     <#list table.columns as column>
     <#if !column.inCommon && !column.tableLogic>
+          <#if swagger>
+    @ApiModelProperty(value = "${column.comment!column.name}")
+        <#else>
     /**
      * ${column.comment!column.name}
      */
+          </#if>
     private ${column.simpleJavaType} ${column.fieldName};
     </#if>
     </#list>

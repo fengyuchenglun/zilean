@@ -177,7 +177,7 @@ public class KimPlusGeneratorHelper {
     public void generate(Config config) {
         AbstractTemplateEngine templateEngine = new FreemarkerTemplateEngine();
         templateEngine.init(config);
-        templateEngine.batchOutput();
+        templateEngine.batchOutput().open();
     }
 
     /**

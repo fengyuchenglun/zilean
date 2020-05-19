@@ -7,7 +7,7 @@ package ${table.serviceImpl.pkg};
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.kim.boot.util.BeanUtils;
+import com.github.fengyuchenglun.util.BeanUtils;
 import ${table.query.className};
 import ${table.form.className};
 import ${table.entity.className};

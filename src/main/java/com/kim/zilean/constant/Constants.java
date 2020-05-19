@@ -72,4 +72,13 @@ public class Constants {
      */
     public static final String DEFAULT_CONTROLLER_SUFFIX = "Controller";
 
+    /**
+     * 目标代码路径
+     */
+    public static final String DEFAULT_SOURCE_PATH="/src/main/java";
+    /**
+     * mapper路径
+     */
+    public static final String DEFAULT_MAPPER_PATH="/src/main/resources/mapper";
+
 }
