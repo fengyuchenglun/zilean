@@ -160,6 +160,9 @@ public class ConfigForm extends JFrame {
         this.bindListeners();
     }
 
+    private void initUI(){
+
+    }
 
     /**
      * 初始化数据
@@ -288,7 +291,6 @@ public class ConfigForm extends JFrame {
         //});
 
 
-        // 包路径
         this.parentField.setActionListener("选择包路径", project, this, x -> {
             this.updatePackagePath();
         });
@@ -489,6 +491,11 @@ public class ConfigForm extends JFrame {
         this.fileOverrideCheckBox.setSelected(config.isFileOverride());
         this.isOpenCheckBox.setSelected(config.isOpen());
         this.kimCheckBox.setSelected(config.isKim());
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        this.initUI();
     }
 
 }

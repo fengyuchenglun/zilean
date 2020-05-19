@@ -1,15 +1,11 @@
 package com.kim.zilean.form.component;
 
 import com.intellij.ide.util.PackageChooserDialog;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.Experiments;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiPackage;
 import com.intellij.ui.TextAccessor;
-import com.intellij.ui.components.JBTextField;
-import com.intellij.ui.components.fields.ExtendableTextField;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,17 +20,13 @@ import java.util.function.Consumer;
  */
 public class PackageChooseTextField extends ComponentWithBrowseButton<JTextField> implements TextAccessor {
     private ActionListener actionListener;
-
     /**
      * Instantiates a new Package choose text field.
      */
     public PackageChooseTextField() {
-        super(getExperiments().isFeatureEnabled("inline.browse.button") ? new ExtendableTextField(10) : new JBTextField(10), null);
+        super(new JTextField(10), null);
     }
 
-    private static Experiments getExperiments(){
-        return ((Experiments) ApplicationManager.getApplication().getPicoContainer().getComponentInstance(Experiments.class.getName()));
-    }
 
     /**
      * Gets text field.
