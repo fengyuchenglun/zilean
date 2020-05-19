@@ -140,4 +140,5 @@ Zilean是一款MyBatis代码生成IntelliJ *IDEA*   plugin。旨在提高后台�
 4. 支持IntelliJ *IDEA*官方仓库、自定义IntelliJ *IDEA*个人仓库安装方式。
 5. 支持生成kotlin模版代码。
 6. 支持Oracle等其他数据模版代码生成。
-7. 文档补充。
+7. 支持生成代码日期类型的选择。
+8. 文档补充。
