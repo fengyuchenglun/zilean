@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.kim.zilean'
-version '1.0.0-SNAPSHOT'
+version '1.0.2-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -18,14 +18,14 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation 'org.freemarker:freemarker:2.3.30'
-    implementation 'com.baomidou:mybatis-plus-generator:3.3.0'
+//    implementation 'com.baomidou:mybatis-plus-generator:3.3.0'
     implementation "org.apache.commons:commons-lang3:3.10"
     implementation "com.google.guava:guava:29.0-jre"
     implementation "commons-io:commons-io:2.6"
     annotationProcessor 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.projectlombok:lombok:1.18.12'
     compileOnly 'org.springframework.boot:spring-boot-starter-web:2.1.3.RELEASE'
-    compileOnly 'com.baomidou:mybatis-plus-boot-starter:3.3.0'
+//    compileOnly 'com.baomidou:mybatis-plus-boot-starter:3.3.0'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -36,10 +36,10 @@ intellij {
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.6"
+    kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.6"
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 patchPluginXml {

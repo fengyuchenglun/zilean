@@ -1,8 +1,8 @@
 package com.kim.zilean.model;
 
-import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
+import com.kim.zilean.generator.rule.DateType;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

@@ -15,7 +15,6 @@
  */
 package com.kim.zilean.generator.engine;
 
-import com.baomidou.mybatisplus.generator.config.ConstVal;
 import com.intellij.openapi.project.Project;
 import com.kim.zilean.ZileanContext;
 import com.kim.zilean.form.ConfigForm;
@@ -30,10 +29,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Map;
 
+import static com.kim.zilean.constant.Constants.UTF8;
+
 /**
  * Freemarker 模板引擎实现文件输出
  *
- * @author nieqiurong
+ * @author duanledexianxian
  * @since 2018-01-11
  */
 @Slf4j
@@ -56,7 +57,7 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
     public void initConfiguration() {
         boolean hasCustomTemp = false;
         configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
-        configuration.setDefaultEncoding(ConstVal.UTF8);
+        configuration.setDefaultEncoding(UTF8);
         Project project = ZileanContext.getInstance().getProject();
         if (project != null) {
             File tempDir = new File(project.getBasePath() + "/.zilean/templates");
@@ -85,7 +86,7 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
     public void writer(Map<String, Object> objectMap, String templatePath, String outputFile) throws Exception {
         Template template = configuration.getTemplate(templatePath);
         try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
-            template.process(objectMap, new OutputStreamWriter(fileOutputStream, ConstVal.UTF8));
+            template.process(objectMap, new OutputStreamWriter(fileOutputStream, UTF8));
         }
         log.debug("模板:" + templatePath + ";  文件:" + outputFile);
     }

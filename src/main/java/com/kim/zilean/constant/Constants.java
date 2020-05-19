@@ -12,6 +12,10 @@ public class Constants {
      * The constant DOT.
      */
     public static final String DOT = ".";
+    /**
+     * UTF8
+     */
+    public static final String UTF8 = "UTF-8";
 
     /**
      * 默认公共字段
