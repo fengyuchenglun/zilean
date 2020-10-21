@@ -54,7 +54,7 @@ zilean是一款MyBatis代码生成IntelliJ *IDEA*  plugin。旨在提高后台�
 
 3. 本地jar安装
 
-   - 插件jar包下载地址[zilean](https://github.com/fengyuchenglun/zilean/releases/download/1.0.13/zilean-1.0.3.jar)
+   - 插件jar包下载地址[zilean](https://github.com/fengyuchenglun/zilean/releases/download/1.0.13/zilean-1.0.3.zip)
    
    - IntelliJ *IDEA*界面操作File->Settings->Plugins，进入插件管理页面。
 
