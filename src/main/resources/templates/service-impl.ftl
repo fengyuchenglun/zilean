@@ -70,7 +70,7 @@ public class ${table.serviceImpl.name} extends ServiceImpl<${table.dao.name}, ${
     @Override
     public IPage<${table.dto.name}> get${simpleClassName}PageList(${table.query.name} query) {
         IPage page = new Page(query.getPageNum(), query.getPageSize());
-        page.setRecords(BeanUtils.copyObject(this.baseMapper.queryList(page, query),${table.dto.name}.class));
+        page.setRecords(BeanUtils.copyList(this.baseMapper.queryList(page, query),${table.dto.name}.class));
         return page;
     }
  }

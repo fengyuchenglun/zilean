@@ -1,6 +1,6 @@
 ### 1. 基本介绍
 
-Zilean是一款MyBatis代码生成IntelliJ *IDEA*   plugin。旨在提高后台开发效率，减少重复编写模版代码的困扰。
+zilean是一款MyBatis代码生成IntelliJ *IDEA*  plugin。旨在提高后台开发效率，减少重复编写模版代码的困扰。
 
 
 
@@ -20,7 +20,7 @@ Zilean是一款MyBatis代码生成IntelliJ *IDEA*   plugin。旨在提高后台�
 
 1. 暂不支持生成kotlin模版代码
 
-2. **IntelliJ *IDEA*版本需要IntelliJ IDEA 2017.3版本以上。**
+2. `IntelliJ IDEA 版本需要IntelliJ IDEA 2017.3版本以上`
 
 3. 生成的service、Controller层模版代码中使用的BeanUtils工具类，需要引入相应的依赖坐标。
 
@@ -124,11 +124,11 @@ Zilean是一款MyBatis代码生成IntelliJ *IDEA*   plugin。旨在提高后台�
 
 本项目主要参考:
 
-1. [batiso]: https://gitee.com/cnscoo/batiso	"batiso"
+1. [batiso](https://gitee.com/cnscoo/batiso)
 
-2. [EasyCode]: https://gitee.com/makejava/EasyCode	"EasyCode"
+2. [EasyCode]( https://gitee.com/makejava/EasyCode)
 
-3. [kvn-code-plugin]: https://gitee.com/kkk001/kvn-code-plugin	"kvn-code-plugin"
+3. [kvn-code-plugin](https://gitee.com/kkk001/kvn-code-plugin)
 
    
 

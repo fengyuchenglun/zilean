@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>com.kim.zilean</id>
-    <name>Zilean</name>
-    <vendor email="fengyuchenglun@foxmail.com" url="https://github.com/fengyuchenglun">KIM</vendor>
+    <id>com.github.fengyuchenglun</id>
+    <name>zilean</name>
+    <vendor email="fengyuchenglun@foxmail.com" url="https://github.com/fengyuchenglun">duanledexianxianxian</vendor>
 
     <description><![CDATA[
     <p>MyBatis代码生成工具。</p>
@@ -30,18 +30,18 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="zilean.ZileanGenerationAction" class="com.kim.zilean.action.ZileanGenerationAction"
+        <action id="zilean.GenerationAction" class="com.github.fengyuchenglun.zilean.action.GenerationAction"
                 text="Generate Code"
                 description="Generate myBatis plus common code">
             <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
         </action>
-        <group id="zileanMenu" text="Zilean" popup="true">
-            <action id="batiso.ExportTemplates" class="com.kim.zilean.action.ZileanExportTemplatesAction"
+        <group id="zileanMenu" text="zilean" popup="true">
+            <action id="batiso.ExportTemplates" class="com.github.fengyuchenglun.zilean.action.ExportTemplatesAction"
                     text="导出默认模版到 .zilean"
                     description="将默认的模版导出到项目根目录 (.zilean/templates) 中">
             </action>
             <action id="batiso.ExportTemplatesToIdea"
-                    class="com.kim.zilean.action.ZileanExportTemplatesToProjectConfigAction"
+                    class="com.github.fengyuchenglun.zilean.action.ExportTemplatesToProjectConfigAction"
                     text="导出默认模版到 .idea/zilean"
                     description="将默认的模版导出到项目配置目录 (.idea/zilean/templates) 中">
             </action>
