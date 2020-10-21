@@ -24,28 +24,38 @@ zilean是一款MyBatis代码生成IntelliJ *IDEA*  plugin。旨在提高后台�
 
 3. 生成的service、Controller层模版代码中使用的BeanUtils工具类，需要引入相应的依赖坐标。
 
-   请使用如下依赖坐标:
+   请使用如下依赖坐标(2020-10-21 最新版本为1.0.13):
 
    ```
    <dependency>
        <groupId>com.github.fengyuchenglun</groupId>
        <artifactId>kim-boot-util</artifactId>
-       <version>1.0.13</version>
+       <version>最新版本</version>
    </dependency>
    ```
-
+   如果使用勾选了lombok选项，请引入lombok依赖(2020-10-21 最新版本为1.18.16)：
+   ```
+   <dependency>
+       <groupId>org.projectlombok</groupId>
+       <artifactId>lombok</artifactId>
+       <version>最新版本</version>
+       <scope>provided</scope>
+   </dependency>
+   ```
 
 
 ### 4. 开始
 
 #### 1. 安装
 
-1. IntelliJ *IDEA*官方仓库安装(**暂未实现**)。
+1. IntelliJ *IDEA*官方仓库安装(**插件官方正在审核中，敬请期待**)。
 
 2. IntelliJ IDEA个人仓库安装(**暂未实现**)。
 
 3. 本地jar安装
 
+   - 插件jar包下载地址[zilean](https://github.com/fengyuchenglun/zilean/releases/download/1.0.13/zilean-1.0.3.jar)
+   
    - IntelliJ *IDEA*界面操作File->Settings->Plugins，进入插件管理页面。
 
    - 左键点击Installed右侧的设置按钮，点击下拉列表的Install Plugin from Dist。
